@@ -1,0 +1,194 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /**
+   * Tailwind CSS theme
+   * tailwind.config.ts expects the following color variables to be expressed as HSL values.
+   * A different format will require also updating the theme in tailwind.config.ts.
+  */
+  :root {
+    --background: 220 14% 97%;
+    --foreground: 220 20% 14%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 220 20% 14%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 20% 14%;
+
+    --primary: 217 91% 60%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 220 14% 96%;
+    --secondary-foreground: 220 20% 14%;
+
+    --muted: 220 14% 96%;
+    --muted-foreground: 220 13% 46%;
+
+    --accent: 217 91% 95%;
+    --accent-foreground: 220 20% 14%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 13% 91%;
+    --input: 220 13% 95%;
+    --ring: 217 91% 60%;
+
+    --radius: 0.75rem;
+
+    --sidebar-background: 220 23% 95%;
+    --sidebar-foreground: 220 20% 14%;
+    --sidebar-primary: 217 91% 60%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 217 91% 95%;
+    --sidebar-accent-foreground: 220 20% 14%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217 91% 60%;
+  }
+
+  .dark {
+    --background: 220 27% 8%;
+    --foreground: 220 14% 89%;
+
+    --card: 220 24% 10%;
+    --card-foreground: 220 14% 89%;
+
+    --popover: 220 24% 10%;
+    --popover-foreground: 220 14% 89%;
+
+    --primary: 217 91% 60%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 220 17% 17%;
+    --secondary-foreground: 220 14% 89%;
+
+    --muted: 220 17% 17%;
+    --muted-foreground: 220 13% 65%;
+
+    --accent: 220 17% 17%;
+    --accent-foreground: 220 14% 89%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 17% 17%;
+    --input: 220 17% 17%;
+    --ring: 217 91% 60%;
+    --sidebar-background: 220 30% 6%;
+    --sidebar-foreground: 220 14% 89%;
+    --sidebar-primary: 217 91% 60%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 24% 10%;
+    --sidebar-accent-foreground: 220 14% 89%;
+    --sidebar-border: 220 24% 10%;
+    --sidebar-ring: 217 91% 60%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+
+  /* Modern Korean-inspired typography */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-semibold tracking-tight;
+  }
+
+  /* Smooth transitions for all interactive elements */
+  button,
+  input,
+  select,
+  textarea {
+    @apply transition-all duration-200 ease-in-out;
+  }
+}
+
+@layer components {
+  /* Modern card styling with subtle shadows */
+  .card-modern {
+    @apply bg-card border border-border/50 shadow-lg shadow-black/[0.03] backdrop-blur-sm;
+  }
+
+  /* Hover animations */
+  .hover-lift {
+    @apply transition-all duration-200 ease-in-out hover:shadow-xl hover:shadow-black/[0.08] hover:-translate-y-0.5;
+  }
+
+  /* Button hover effects */
+  .btn-modern {
+    @apply transition-all duration-200 ease-in-out hover:scale-[1.02] active:scale-[0.98];
+  }
+
+  /* Input focus effects */
+  .input-modern {
+    @apply transition-all duration-200 ease-in-out focus:ring-2 focus:ring-primary/20 focus:border-primary;
+  }
+
+  /* Fade-in animation for dynamic content */
+  .animate-fade-in {
+    animation: fade-in 0.3s ease-out;
+  }
+
+  /* Onboarding highlight effect */
+  .onboarding-highlight {
+    @apply relative;
+    animation: pulse-highlight 2s infinite;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.5);
+    border-radius: 8px;
+    z-index: 40;
+  }
+
+  .onboarding-highlight::after {
+    content: '';
+    position: absolute;
+    inset: -8px;
+    border: 2px solid rgb(59, 130, 246);
+    border-radius: 12px;
+    pointer-events: none;
+    animation: pulse-ring 2s infinite;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse-highlight {
+  0%, 100% {
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(59, 130, 246, 0.3);
+  }
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.1);
+    opacity: 0;
+  }
+}
