@@ -1,0 +1,1218 @@
+{
+  "version": "builder_full_v2.2",
+  "last_updated": "2025-08-21",
+  "description": "단위 수정(productWeight kg→g), 컬럼 정리(scrapPrice 삭제), 봉재 총중량 추가(materialTotalWeight)",
+  "columns": [
+    {
+      "key": "productName",
+      "label_kr": "제품명",
+      "type": "str",
+      "unit": null,
+      "description": "제품 이름",
+      "source": "입력",
+      "group": "기본 정보",
+      "scope": "input",
+      "unit_detail": {
+        "unit_in": null,
+        "unit_calc": null,
+        "unit_out": null
+      },
+      "required_when": {
+        "rod": false,
+        "sheet": false
+      },
+      "default_source": "user_input_or_calculated",
+      "precision": {
+        "rounding": 3
+      },
+      "deprecation": {
+        "deprecated": false,
+        "replacement": null,
+        "note": null
+      }
+    },
+    {
+      "key": "customer",
+      "label_kr": "고객사",
+      "type": "str",
+      "unit": null,
+      "description": "고객사 이름",
+      "source": "입력",
+      "group": "기본 정보",
+      "scope": "input",
+      "unit_detail": {
+        "unit_in": null,
+        "unit_calc": null,
+        "unit_out": null
+      },
+      "required_when": {
+        "rod": false,
+        "sheet": false
+      },
+      "default_source": "user_input_or_calculated",
+      "precision": {
+        "rounding": 3
+      },
+      "deprecation": {
+        "deprecated": false,
+        "replacement": null,
+        "note": null
+      }
+    },
+    {
+      "key": "materialType",
+      "label_kr": "재질",
+      "type": "str",
+      "unit": null,
+      "description": "재질 유형 (rod 또는 sheet)",
+      "source": "입력",
+      "group": "기본 정보",
+      "scope": "input",
+      "unit_detail": {
+        "unit_in": null,
+        "unit_calc": null,
+        "unit_out": null
+      },
+      "required_when": {
+        "rod": false,
+        "sheet": false
+      },
+      "default_source": "user_input_or_calculated",
+      "precision": {
+        "rounding": 3
+      },
+      "deprecation": {
+        "deprecated": false,
+        "replacement": null,
+        "note": null
+      }
+    },
+    {
+      "key": "shape",
+      "label_kr": "봉재 형태",
+      "type": "str",
+      "unit": null,
+      "description": "봉재 형상 종류 (circle, hexagon, square, rectangle 등)",
+      "source": "입력",
+      "group": "기본 정보",
+      "scope": "input",
+      "unit_detail": {
+        "unit_in": null,
+        "unit_calc": null,
+        "unit_out": null
+      },
+      "required_when": {
+        "rod": true,
+        "sheet": false
+      },
+      "default_source": "user_input_or_calculated",
+      "precision": {
+        "rounding": 3
+      },
+      "deprecation": {
+        "deprecated": false,
+        "replacement": null,
+        "note": null
+      }
+    },
+    {
+      "key": "diameter",
+      "label_kr": "직경",
+      "type": "float",
+      "unit": "mm",
+      "description": "원형/육각형/정사각형의 직경",
+      "source": "입력",
+      "group": "기본 정보",
+      "scope": "input",
+      "unit_detail": {
+        "unit_in": "mm",
+        "unit_calc": "mm",
+        "unit_out": "mm"
+      },
+      "required_when": {
+        "rod": "conditional",
+        "sheet": false
+      },
+      "constraints": {
+        "min": 0,
+        "non_negative": true
+      },
+      "default_source": "user_input_or_calculated",
+      "precision": {
+        "rounding": 3
+      },
+      "deprecation": {
+        "deprecated": false,
+        "replacement": null,
+        "note": null
+      }
+    },
+    {
+      "key": "width",
+      "label_kr": "가로",
+      "type": "float",
+      "unit": "mm",
+      "description": "직사각형(봉재) 가로",
+      "source": "입력",
+      "group": "기본 정보",
+      "scope": "input",
+      "unit_detail": {
+        "unit_in": "mm",
+        "unit_calc": "mm",
+        "unit_out": "mm"
+      },
+      "required_when": {
+        "rod": "conditional",
+        "sheet": false
+      },
+      "constraints": {
+        "min": 0,
+        "non_negative": true
+      },
+      "default_source": "user_input_or_calculated",
+      "precision": {
+        "rounding": 3
+      },
+      "deprecation": {
+        "deprecated": false,
+        "replacement": null,
+        "note": null
+      }
+    },
+    {
+      "key": "height",
+      "label_kr": "세로",
+      "type": "float",
+      "unit": "mm",
+      "description": "직사각형(봉재) 세로",
+      "source": "입력",
+      "group": "기본 정보",
+      "scope": "input",
+      "unit_detail": {
+        "unit_in": "mm",
+        "unit_calc": "mm",
+        "unit_out": "mm"
+      },
+      "required_when": {
+        "rod": "conditional",
+        "sheet": false
+      },
+      "constraints": {
+        "min": 0,
+        "non_negative": true
+      },
+      "default_source": "user_input_or_calculated",
+      "precision": {
+        "rounding": 3
+      },
+      "deprecation": {
+        "deprecated": false,
+        "replacement": null,
+        "note": null
+      }
+    },
+    {
+      "key": "productLength",
+      "label_kr": "제품 길이",
+      "type": "float",
+      "unit": "mm",
+      "description": "봉재 가공 시 제품 길이",
+      "source": "입력",
+      "group": "기본 정보",
+      "scope": "input",
+      "unit_detail": {
+        "unit_in": "mm",
+        "unit_calc": "mm",
+        "unit_out": "mm"
+      },
+      "required_when": {
+        "rod": true,
+        "sheet": false
+      },
+      "constraints": {
+        "min": 0,
+        "non_negative": true
+      },
+      "default_source": "user_input_or_calculated",
+      "precision": {
+        "rounding": 3
+      },
+      "deprecation": {
+        "deprecated": false,
+        "replacement": null,
+        "note": null
+      }
+    },
+    {
+      "key": "quantity",
+      "label_kr": "수량",
+      "type": "int",
+      "unit": "개",
+      "description": "총 제작 수량",
+      "source": "입력",
+      "group": "기본 정보",
+      "scope": "input",
+      "unit_detail": {
+        "unit_in": "개",
+        "unit_calc": "개",
+        "unit_out": "개"
+      },
+      "required_when": {
+        "rod": true,
+        "sheet": false
+      },
+      "constraints": {
+        "min": 1,
+        "int_only": true
+      },
+      "default_source": "user_input_or_calculated",
+      "precision": {
+        "rounding": 3
+      },
+      "deprecation": {
+        "deprecated": false,
+        "replacement": null,
+        "note": null
+      }
+    },
+    {
+      "key": "cuttingLoss",
+      "label_kr": "절단손실",
+      "type": "float",
+      "unit": "mm",
+      "description": "절단 시 손실되는 길이",
+      "source": "입력",
+      "group": "계산 기초값",
+      "scope": "input",
+      "unit_detail": {
+        "unit_in": "mm",
+        "unit_calc": "mm",
+        "unit_out": "mm"
+      },
+      "required_when": {
+        "rod": false,
+        "sheet": false
+      },
+      "constraints": {
+        "min": 0,
+        "non_negative": true
+      },
+      "default_source": "process_defaults",
+      "precision": {
+        "rounding": 3
+      },
+      "deprecation": {
+        "deprecated": false,
+        "replacement": null,
+        "note": null
+      }
+    },
+    {
+      "key": "headCut",
+      "label_kr": "선두 로스",
+      "type": "float",
+      "unit": "mm",
+      "description": "봉재 선단 가공 손실",
+      "source": "입력",
+      "group": "계산 기초값",
+      "scope": "input",
+      "unit_detail": {
+        "unit_in": "mm",
+        "unit_calc": "mm",
+        "unit_out": "mm"
+      },
+      "required_when": {
+        "rod": false,
+        "sheet": false
+      },
+      "constraints": {
+        "min": 0,
+        "non_negative": true
+      },
+      "default_source": "process_defaults",
+      "precision": {
+        "rounding": 3
+      },
+      "deprecation": {
+        "deprecated": false,
+        "replacement": null,
+        "note": null
+      }
+    },
+    {
+      "key": "tailCut",
+      "label_kr": "후미 로스",
+      "type": "float",
+      "unit": "mm",
+      "description": "봉재 후단 가공 손실",
+      "source": "입력",
+      "group": "계산 기초값",
+      "scope": "input",
+      "unit_detail": {
+        "unit_in": "mm",
+        "unit_calc": "mm",
+        "unit_out": "mm"
+      },
+      "required_when": {
+        "rod": false,
+        "sheet": false
+      },
+      "constraints": {
+        "min": 0,
+        "non_negative": true
+      },
+      "default_source": "process_defaults",
+      "precision": {
+        "rounding": 3
+      },
+      "deprecation": {
+        "deprecated": false,
+        "replacement": null,
+        "note": null
+      }
+    },
+    {
+      "key": "recoveryRatio",
+      "label_kr": "환산율",
+      "type": "float",
+      "unit": "%",
+      "description": "스크랩 환산율 (%)",
+      "source": "입력",
+      "group": "스크랩 관련",
+      "scope": "input",
+      "unit_detail": {
+        "unit_in": "%",
+        "unit_calc": "%",
+        "unit_out": "%"
+      },
+      "required_when": {
+        "scrap_condition": true
+      },
+      "constraints": {
+        "min": 0,
+        "max": 100
+      },
+      "default_source": "user_input_or_calculated",
+      "precision": {
+        "rounding": 3
+      },
+      "deprecation": {
+        "deprecated": false,
+        "replacement": null,
+        "note": null
+      }
+    },
+    {
+      "key": "scrapUnitPrice",
+      "label_kr": "스크랩 단가",
+      "type": "float",
+      "unit": "₩/kg",
+      "description": "스크랩 회수 단가",
+      "source": "입력",
+      "group": "스크랩 관련",
+      "scope": "input",
+      "unit_detail": {
+        "unit_in": "₩/kg",
+        "unit_calc": "₩/kg",
+        "unit_out": "₩/kg"
+      },
+      "required_when": {
+        "scrap_condition": true
+      },
+      "constraints": {
+        "min": 0
+      },
+
+      "default_source": "user_input_or_calculated",
+      "precision": {
+        "rounding": 3
+      },
+      "deprecation": {
+        "deprecated": false,
+        "replacement": null,
+        "note": null
+      }
+    },
+    {
+      "key": "standardBarLength",
+      "label_kr": "표준봉길이",
+      "type": "float",
+      "unit": "mm",
+      "description": "표준 봉재 길이",
+      "source": "입력",
+      "group": "계산 기초값",
+      "scope": "input",
+      "unit_detail": {
+        "unit_in": "mm",
+        "unit_calc": "mm",
+        "unit_out": "mm"
+      },
+      "required_when": {
+        "rod": false,
+        "sheet": false
+      },
+      "constraints": {
+        "min": 1
+      },
+      "default_source": "material_defaults",
+      "precision": {
+        "rounding": 3
+      },
+      "deprecation": {
+        "deprecated": false,
+        "replacement": null,
+        "note": null
+      }
+    },
+    {
+      "key": "materialDensity",
+      "label_kr": "재질비중",
+      "type": "float",
+      "unit": "kg/m³",
+      "description": "재질의 밀도",
+      "source": "입력",
+      "group": "계산 기초값",
+      "scope": "input",
+      "unit_detail": {
+        "unit_in": "kg/m³",
+        "unit_calc": "g/cm³",
+        "unit_out": "kg/m³"
+      },
+      "required_when": {
+        "rod": false,
+        "sheet": false
+      },
+      "constraints": {
+        "min": 0
+      },
+      "default_source": "material_defaults",
+      "precision": {
+        "rounding": 3
+      },
+      "deprecation": {
+        "deprecated": false,
+        "replacement": null,
+        "note": null
+      }
+    },
+    {
+      "key": "materialPrice",
+      "label_kr": "봉단가",
+      "type": "float",
+      "unit": "₩/kg",
+      "description": "봉재의 kg당 단가",
+      "source": "입력",
+      "group": "계산 기초값",
+      "scope": "input",
+      "unit_detail": {
+        "unit_in": "₩/kg",
+        "unit_calc": "₩/kg",
+        "unit_out": "₩/kg"
+      },
+      "required_when": {
+        "rod": false,
+        "sheet": false
+      },
+      "constraints": {
+        "min": 0
+      },
+      "default_source": "material_defaults",
+      "precision": {
+        "rounding": 3
+      },
+      "deprecation": {
+        "deprecated": false,
+        "replacement": null,
+        "note": null
+      }
+    },
+    {
+      "key": "plateThickness",
+      "label_kr": "두께(판재)",
+      "type": "float",
+      "unit": "mm",
+      "description": "판재의 두께",
+      "source": "입력",
+      "group": "기본 정보",
+      "scope": "input",
+      "unit_detail": {
+        "unit_in": "mm",
+        "unit_calc": "mm",
+        "unit_out": "mm"
+      },
+      "required_when": {
+        "rod": false,
+        "sheet": true
+      },
+      "constraints": {
+        "min": 0
+      },
+      "aliases": [
+        "thickness"
+      ],
+      "default_source": "user_input_or_calculated",
+      "precision": {
+        "rounding": 3
+      },
+      "deprecation": {
+        "deprecated": false,
+        "replacement": null,
+        "note": null
+      }
+    },
+    {
+      "key": "plateWidth",
+      "label_kr": "폭(판재)",
+      "type": "float",
+      "unit": "mm",
+      "description": "판재의 폭",
+      "source": "입력",
+      "group": "기본 정보",
+      "scope": "input",
+      "unit_detail": {
+        "unit_in": "mm",
+        "unit_calc": "mm",
+        "unit_out": "mm"
+      },
+      "required_when": {
+        "rod": false,
+        "sheet": true
+      },
+      "constraints": {
+        "min": 0
+      },
+      "aliases": [
+        "width_plate"
+      ],
+      "default_source": "user_input_or_calculated",
+      "precision": {
+        "rounding": 3
+      },
+      "deprecation": {
+        "deprecated": false,
+        "replacement": null,
+        "note": null
+      }
+    },
+    {
+      "key": "plateLength",
+      "label_kr": "길이(판재)",
+      "type": "float",
+      "unit": "mm",
+      "description": "판재의 길이",
+      "source": "입력",
+      "group": "기본 정보",
+      "scope": "input",
+      "unit_detail": {
+        "unit_in": "mm",
+        "unit_calc": "mm",
+        "unit_out": "mm"
+      },
+      "required_when": {
+        "rod": false,
+        "sheet": true
+      },
+      "constraints": {
+        "min": 0
+      },
+      "aliases": [
+        "length_plate"
+      ],
+      "default_source": "user_input_or_calculated",
+      "precision": {
+        "rounding": 3
+      },
+      "deprecation": {
+        "deprecated": false,
+        "replacement": null,
+        "note": null
+      }
+    },
+    {
+      "key": "plateUnitPrice",
+      "label_kr": "판단가",
+      "type": "float",
+      "unit": "₩/kg",
+      "description": "판재의 kg당 단가",
+      "source": "입력",
+      "group": "계산 기초값",
+      "scope": "input",
+      "unit_detail": {
+        "unit_in": "₩/kg",
+        "unit_calc": "₩/kg",
+        "unit_out": "₩/kg"
+      },
+      "required_when": {
+        "rod": false,
+        "sheet": false
+      },
+      "default_source": "material_defaults",
+      "precision": {
+        "rounding": 3
+      },
+      "deprecation": {
+        "deprecated": false,
+        "replacement": null,
+        "note": null
+      }
+    },
+    {
+      "key": "productWeight",
+      "label_kr": "제품중량",
+      "type": "float",
+      "unit": "g",
+      "description": "단위 제품 중량",
+      "source": "입력",
+      "group": "기본 정보",
+      "scope": "input",
+      "unit_detail": {
+        "unit_in": "g",
+        "unit_calc": "g",
+        "unit_out": "g"
+      },
+      "required_when": {
+        "rod": false,
+        "sheet": false
+      },
+      "constraints": {
+        "min": 0
+      },
+      "default_source": "user_input_or_calculated",
+      "precision": {
+        "rounding": 3
+      },
+      "deprecation": {
+        "deprecated": false,
+        "replacement": null,
+        "note": null
+      }
+    },
+    {
+      "key": "actualProductWeight",
+      "label_kr": "제품 실중량",
+      "type": "float",
+      "unit": "g",
+      "description": "사용자가 입력하는 제품 1개 실제 중량 (g)",
+      "source": "입력",
+      "group": "기본 정보",
+      "scope": "input",
+      "unit_detail": {
+        "unit_in": "g",
+        "unit_calc": "g",
+        "unit_out": "g"
+      },
+      "required_when": {
+        "scrap_condition": true
+      },
+      "constraints": {
+        "min": 0
+      },
+      "default_source": "user_input_or_calculated",
+      "precision": {
+        "rounding": 3
+      },
+      "deprecation": {
+        "deprecated": false,
+        "replacement": null,
+        "note": null
+      }
+    },
+    {
+      "key": "totalActualProductWeight",
+      "label_kr": "제품 실제 총중량",
+      "type": "float",
+      "unit": "kg",
+      "description": "실제 제품 1개 중량 × 수량의 합 (kg)",
+      "source": "계산",
+      "group": "계산 결과",
+      "scope": "output",
+      "unit_detail": {
+        "unit_in": "kg",
+        "unit_calc": "kg",
+        "unit_out": "kg"
+      },
+      "required_when": {
+        "rod": false,
+        "sheet": false
+      },
+      "default_source": "user_input_or_calculated",
+      "precision": {
+        "rounding": 3
+      },
+      "deprecation": {
+        "deprecated": false,
+        "replacement": null,
+        "note": null
+      }
+    },
+    {
+      "key": "totalCost",
+      "label_kr": "총 재료비",
+      "type": "float",
+      "unit": "₩",
+      "description": "전체 생산에 필요한 재료비",
+      "source": "계산",
+      "group": "계산 결과",
+      "scope": "output",
+      "unit_detail": {
+        "unit_in": "₩",
+        "unit_calc": "₩",
+        "unit_out": "₩"
+      },
+      "required_when": {
+        "rod": false,
+        "sheet": false
+      },
+      "constraints": {
+        "min": 0
+      },
+      "aliases": [
+        "materialCost"
+      ],
+      "default_source": "user_input_or_calculated",
+      "precision": {
+        "rounding": 0
+      },
+      "related_columns": [
+        "materialPrice",
+        "quantity",
+        "scrapSavings",
+        "totalWeight"
+      ],
+      "deprecation": {
+        "deprecated": false,
+        "replacement": null,
+        "note": null
+      }
+    },
+    {
+      "key": "unitCost",
+      "label_kr": "개당 단가",
+      "type": "float",
+      "unit": "₩",
+      "description": "제품 1개당 재료 단가",
+      "source": "계산",
+      "group": "계산 결과",
+      "scope": "output",
+      "unit_detail": {
+        "unit_in": "₩",
+        "unit_calc": "₩",
+        "unit_out": "₩"
+      },
+      "required_when": {
+        "rod": false,
+        "sheet": false
+      },
+      "constraints": {
+        "min": 0
+      },
+      "aliases": [
+        "costPerPiece"
+      ],
+      "default_source": "user_input_or_calculated",
+      "precision": {
+        "rounding": 0
+      },
+      "related_columns": [
+        "materialPrice",
+        "quantity",
+        "scrapSavings",
+        "totalWeight"
+      ],
+      "deprecation": {
+        "deprecated": false,
+        "replacement": null,
+        "note": null
+      }
+    },
+    {
+      "key": "utilizationRate",
+      "label_kr": "절단 효율",
+      "type": "float",
+      "unit": "%",
+      "description": "자재 사용 효율",
+      "source": "계산",
+      "group": "계산 결과",
+      "scope": "output",
+      "unit_detail": {
+        "unit_in": "%",
+        "unit_calc": "%",
+        "unit_out": "%"
+      },
+      "required_when": {
+        "rod": false,
+        "sheet": false
+      },
+      "constraints": {
+        "min": 0,
+        "max": 100
+      },
+      "default_source": "user_input_or_calculated",
+      "precision": {
+        "rounding": 2
+      },
+      "deprecation": {
+        "deprecated": false,
+        "replacement": null,
+        "note": null
+      }
+    },
+    {
+      "key": "scrapSavings",
+      "label_kr": "스크랩 절감액",
+      "type": "float",
+      "unit": "₩",
+      "description": "스크랩 회수로 절약된 금액",
+      "source": "계산",
+      "group": "스크랩 관련",
+      "scope": "output",
+      "unit_detail": {
+        "unit_in": "₩",
+        "unit_calc": "₩",
+        "unit_out": "₩"
+      },
+      "required_when": {
+        "rod": false,
+        "sheet": false
+      },
+      "constraints": {
+        "min": 0
+      },
+      "default_source": "user_input_or_calculated",
+      "precision": {
+        "rounding": 0
+      },
+      "related_columns": [
+        "actualProductWeight",
+        "quantity",
+        "recoveryRatio",
+        "scrapUnitPrice"
+      ],
+      "deprecation": {
+        "deprecated": false,
+        "replacement": null,
+        "note": null
+      }
+    },
+    {
+      "key": "wastage",
+      "label_kr": "손실률",
+      "type": "float",
+      "unit": "%",
+      "description": "자재 사용 손실률",
+      "source": "계산",
+      "group": "계산 결과",
+      "scope": "output",
+      "unit_detail": {
+        "unit_in": "%",
+        "unit_calc": "%",
+        "unit_out": "%"
+      },
+      "required_when": {
+        "rod": false,
+        "sheet": false
+      },
+      "constraints": {
+        "min": 0,
+        "max": 100
+      },
+      "default_source": "user_input_or_calculated",
+      "precision": {
+        "rounding": 2
+      },
+      "deprecation": {
+        "deprecated": false,
+        "replacement": null,
+        "note": null
+      }
+    },
+    {
+      "key": "materialTotalWeight",
+      "label_kr": "봉재 총중량",
+      "type": "float",
+      "unit": "kg",
+      "description": "필요한 모든 봉재의 총 중량 (구매해야 할 원재료 전체 중량)",
+      "source": "계산",
+      "group": "계산 결과",
+      "scope": "output",
+      "unit_detail": {
+        "unit_in": "kg",
+        "unit_calc": "kg",
+        "unit_out": "kg"
+      },
+      "required_when": {
+        "rod": false,
+        "sheet": false
+      },
+      "constraints": {
+        "min": 0
+      },
+      "default_source": "user_input_or_calculated",
+      "precision": {
+        "rounding": 3
+      },
+      "related_columns": [
+        "diameter",
+        "height",
+        "materialDensity",
+        "plateLength",
+        "plateThickness",
+        "plateWidth",
+        "standardBarLength",
+        "barsNeeded",
+        "width"
+      ],
+      "deprecation": {
+        "deprecated": false,
+        "replacement": null,
+        "note": null
+      }
+    },
+    {
+      "key": "totalWeight",
+      "label_kr": "제품 총중량",
+      "type": "float",
+      "unit": "kg",
+      "description": "만들어질 제품들의 총 중량 (productWeight × quantity)",
+      "source": "계산",
+      "group": "계산 결과",
+      "scope": "output",
+      "unit_detail": {
+        "unit_in": "kg",
+        "unit_calc": "kg",
+        "unit_out": "kg"
+      },
+      "required_when": {
+        "rod": false,
+        "sheet": false
+      },
+      "constraints": {
+        "min": 0
+      },
+      "default_source": "user_input_or_calculated",
+      "precision": {
+        "rounding": 3
+      },
+      "related_columns": [
+        "diameter",
+        "height",
+        "materialDensity",
+        "plateLength",
+        "plateThickness",
+        "plateWidth",
+        "productLength",
+        "quantity",
+        "width"
+      ],
+      "deprecation": {
+        "deprecated": false,
+        "replacement": null,
+        "note": null
+      }
+    },
+    {
+      "key": "barsNeeded",
+      "label_kr": "필요 봉재 수",
+      "type": "int",
+      "unit": "개",
+      "description": "필요한 봉재 수량",
+      "source": "계산",
+      "group": "계산 결과",
+      "scope": "output",
+      "unit_detail": {
+        "unit_in": "개",
+        "unit_calc": "개",
+        "unit_out": "개"
+      },
+      "required_when": {
+        "rod": false,
+        "sheet": false
+      },
+      "constraints": {
+        "min": 0,
+        "int_only": true
+      },
+      "default_source": "user_input_or_calculated",
+      "precision": {
+        "rounding": 3
+      },
+      "deprecation": {
+        "deprecated": false,
+        "replacement": null,
+        "note": null
+      }
+    },
+    {
+      "key": "isPlate",
+      "label_kr": "판재 여부",
+      "type": "bool",
+      "unit": null,
+      "description": "판재 여부(true/false)",
+      "source": "계산",
+      "group": "계산 결과",
+      "scope": "output",
+      "unit_detail": {
+        "unit_in": null,
+        "unit_calc": null,
+        "unit_out": null
+      },
+      "required_when": {
+        "rod": false,
+        "sheet": false
+      },
+      "default_source": "user_input_or_calculated",
+      "precision": {
+        "rounding": 3
+      },
+      "deprecation": {
+        "deprecated": false,
+        "replacement": null,
+        "note": null
+      }
+    },
+    {
+      "key": "scrapWeight",
+      "label_kr": "스크랩중량",
+      "type": "float",
+      "unit": "kg",
+      "description": "제품 생산 후 남은 재활용 가능한 자투리 자재량",
+      "source": "계산",
+      "group": "스크랩 관련",
+      "scope": "output",
+      "unit_detail": {
+        "unit_in": "kg",
+        "unit_calc": "kg",
+        "unit_out": "kg"
+      },
+      "required_when": {
+        "rod": false,
+        "sheet": false
+      },
+      "constraints": {
+        "min": 0
+      },
+      "default_source": "user_input_or_calculated",
+      "precision": {
+        "rounding": 3
+      },
+      "related_columns": [
+        "actualProductWeight",
+        "quantity",
+        "recoveryRatio",
+        "scrapUnitPrice"
+      ],
+      "deprecation": {
+        "deprecated": false,
+        "replacement": null,
+        "note": null
+      }
+    },
+    {
+      "key": "realCost",
+      "label_kr": "실재료비",
+      "type": "float",
+      "unit": "₩",
+      "description": "총 재료비에서 스크랩 절감액을 차감한 실제 재료비",
+      "source": "계산",
+      "group": "계산 결과",
+      "scope": "output",
+      "unit_detail": {
+        "unit_in": "₩",
+        "unit_calc": "₩",
+        "unit_out": "₩"
+      },
+      "required_when": {
+        "rod": false,
+        "sheet": false
+      },
+      "constraints": {
+        "min": 0
+      },
+      "default_source": "user_input_or_calculated",
+      "precision": {
+        "rounding": 0
+      },
+      "related_columns": [
+        "materialPrice",
+        "quantity",
+        "scrapSavings",
+        "totalWeight"
+      ],
+      "deprecation": {
+        "deprecated": false,
+        "replacement": null,
+        "note": null
+      }
+    }
+  ],
+  "policy": {
+    "unit_policy": {
+      "materialDensity": {
+        "unit_in": "kg/m³",
+        "unit_calc": "g/cm³",
+        "unit_out": "kg/m³",
+        "conversion_note": "API 수신단에서 kg/m³ → g/cm³ 단방향 환산. 내부 계산은 g/cm³ 통일."
+      },
+      "length": {
+        "unit_in": "mm",
+        "unit_calc": "mm",
+        "unit_out": "mm"
+      },
+      "weight": {
+        "unit_in": "kg",
+        "unit_calc": "kg",
+        "unit_out": "kg"
+      },
+      "price_per_weight": {
+        "unit_in": "₩/kg",
+        "unit_calc": "₩/kg",
+        "unit_out": "₩/kg"
+      },
+      "percentage": {
+        "unit_in": "%",
+        "unit_calc": "%",
+        "unit_out": "%"
+      }
+    },
+    "required_rules": {
+      "rod": [
+        "shape",
+        "(diameter) OR (width AND height)",
+        "productLength",
+        "quantity"
+      ],
+      "sheet": [
+        "plateThickness",
+        "plateWidth",
+        "plateLength",
+        "quantity"
+      ],
+      "scrap_condition": [
+        "스크랩계산토글 == ON",
+        "actualProductWeight > 0 (사용자 직접 입력 필수)",
+        "recoveryRatio > 0 (기본값 적용 가능)",
+        "scrapUnitPrice > 0 (기본값 적용 가능)"
+      ]
+    },
+    "naming": {
+      "single_source_of_truth": "이 파일의 key·타입·단위·제약을 단일 진실원으로 사용하고, 코드/스키마/폼은 본 파일에서 생성·동기화한다."
+    },
+    "precision": {
+      "default_rounding": 3,
+      "currency_rounding": 0,
+      "percentage_rounding": 2
+    }
+  },
+  "enums": {
+    "shape": [
+      "circle",
+      "hexagon",
+      "square",
+      "rectangle"
+    ],
+    "materialType": [
+      "rod",
+      "sheet"
+    ]
+  }
+}
