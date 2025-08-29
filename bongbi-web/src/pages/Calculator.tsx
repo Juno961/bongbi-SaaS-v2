@@ -82,6 +82,7 @@ const Calculator = () => {
   // 중복 저장 방지를 위한 state 추가
   const [lastSavedData, setLastSavedData] = useState<string | null>(null);
   const [isRecentlySaved, setIsRecentlySaved] = useState(false);
+  const [lastToastTime, setLastToastTime] = useState(0);
 
   useEffect(() => {
     const loadCalculationSettings = () => {
@@ -246,7 +247,13 @@ const Calculator = () => {
         };
         setResults(calculationResults);
       }
-      toast.success("계산이 완료되었습니다!");
+      
+      // Toast 중복 방지: 마지막 토스트 후 2초가 지난 경우에만 표시
+      const now = Date.now();
+      if (now - lastToastTime > 2000) {
+        toast.success("계산이 완료되었습니다!");
+        setLastToastTime(now);
+      }
     } catch (error) {
       console.error("계산 오류:", error);
       toast.error(`계산 중 오류가 발생했습니다: ${error instanceof Error ? error.message : "알 수 없는 오류"}`);
