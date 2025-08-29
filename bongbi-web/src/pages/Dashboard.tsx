@@ -218,7 +218,10 @@ const Dashboard = () => {
           <div className="text-center mb-8">
             <h1 className="text-4xl font-bold text-gray-900 mb-3 flex items-center justify-center gap-3">
               <Factory className="h-10 w-10 text-blue-600" />
-              안녕하세요, 봉비서입니다
+              <span className="hidden sm:inline">안녕하세요, 봉비서입니다</span>
+              <span className="sm:hidden text-center">
+                안녕하세요,<br />봉비서입니다
+              </span>
             </h1>
             <p className="text-xl text-gray-600">
               CNC 재료 계산 및 공장 효율성 현황을 확인하세요
@@ -361,17 +364,17 @@ const Dashboard = () => {
                     key={calc.id}
                     className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
                   >
-                    <div className="flex-1">
+                    <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-3 mb-2">
-                        <span className="font-semibold text-gray-900">{calc.productName}</span>
-                        <Badge variant="outline" className="text-xs">
+                        <span className="font-semibold text-gray-900 whitespace-nowrap truncate max-w-[20ch] block">{calc.productName}</span>
+                        <Badge variant="outline" className="text-xs hidden sm:inline-flex shrink-0">
                           {getMaterialDisplayName(calc.materialType)}
                         </Badge>
-                        <span className="text-xs text-gray-500">
+                        <span className="text-xs text-gray-500 hidden sm:inline shrink-0">
                           {formatDate(calc.timestamp)}
                         </span>
                       </div>
-                      <div className="text-sm text-gray-600">
+                      <div className="text-sm text-gray-600 hidden sm:block">
                         {calc.isPlate ? (
                           `${calc.plateThickness}×${calc.plateWidth}×${calc.plateLength}mm • ${calc.quantity}장`
                         ) : (
@@ -381,11 +384,11 @@ const Dashboard = () => {
                         )}
                       </div>
                     </div>
-                    <div className="text-right">
-                      <div className="text-lg font-bold text-blue-600">
+                    <div className="text-right shrink-0">
+                      <div className="text-lg font-bold text-blue-600 whitespace-nowrap">
                         {formatCurrency(calc.totalCost)}
                       </div>
-                      <div className="text-xs text-gray-500">총 소재비</div>
+                      <div className="text-xs text-gray-500 hidden sm:block">총 소재비</div>
                     </div>
                   </div>
                 ))}
@@ -453,33 +456,48 @@ const Dashboard = () => {
           {isChartExpanded && (
             <CardContent>
               {materialUsageData.length > 0 ? (
-                <div className="h-64">
-                  <ChartContainer
-                    config={{
-                      usage: {
-                        label: "사용량 (kg)",
-                        color: "hsl(var(--primary))",
-                      },
-                    }}
-                    className="h-full"
-                  >
-                    <BarChart data={materialUsageData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis
-                        dataKey="material"
-                        tickLine={false}
-                        axisLine={false}
-                        className="text-xs"
-                      />
-                      <YAxis tickLine={false} axisLine={false} className="text-xs" />
-                      <ChartTooltip content={<ChartTooltipContent />} />
-                      <Bar
-                        dataKey="usage"
-                        fill="var(--color-usage)"
-                        radius={[4, 4, 0, 0]}
-                      />
-                    </BarChart>
-                  </ChartContainer>
+                <div className="h-64 sm:h-80 overflow-x-auto">
+                  <div className="min-w-[400px] h-full">
+                    <ChartContainer
+                      config={{
+                        usage: {
+                          label: "사용량 (kg)",
+                          color: "hsl(var(--primary))",
+                        },
+                      }}
+                      className="h-full w-full"
+                    >
+                      <BarChart 
+                        data={materialUsageData}
+                        margin={{
+                          top: 20,
+                          right: 30,
+                          left: 20,
+                          bottom: 60,
+                        }}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis
+                          dataKey="material"
+                          tickLine={false}
+                          axisLine={false}
+                          className="text-xs"
+                          angle={-45}
+                          textAnchor="end"
+                          height={60}
+                          interval={0}
+                        />
+                        <YAxis tickLine={false} axisLine={false} className="text-xs" />
+                        <ChartTooltip content={<ChartTooltipContent />} />
+                        <Bar
+                          dataKey="usage"
+                          fill="var(--color-usage)"
+                          radius={[4, 4, 0, 0]}
+                          maxBarSize={60}
+                        />
+                      </BarChart>
+                    </ChartContainer>
+                  </div>
                 </div>
               ) : (
                 <div className="h-64 flex items-center justify-center text-center text-gray-500">

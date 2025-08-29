@@ -1,6 +1,6 @@
 param(
   [string]$ApiHost = "127.0.0.1",
-  [int]$ApiPort = 8000,
+  [int]$ApiPort = 8001,
   [bool]$Reload = $true
 )
 

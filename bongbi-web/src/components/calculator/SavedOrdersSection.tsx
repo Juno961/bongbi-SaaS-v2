@@ -298,7 +298,10 @@ export const SavedOrdersSection = ({
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-[#3182F6] rounded-full"></div>
                 <h3 className="text-sm font-semibold text-gray-900">
-                  저장된 주문 ({savedOrders.length})
+                  <span className="hidden sm:inline">저장된 주문 ({savedOrders.length})</span>
+                  <span className="sm:hidden">
+                    저장된<br />주문 ({savedOrders.length})
+                  </span>
                 </h3>
               </div>
               <div className="flex items-center gap-2">
@@ -361,7 +364,8 @@ export const SavedOrdersSection = ({
                     key={order.id}
                     className="border-l-3 border-l-[#3182F6] bg-[#3182F6]/5 rounded-r-md py-1.5 px-3"
                   >
-                    <div className="flex items-center justify-between">
+                    {/* Desktop layout */}
+                    <div className="hidden sm:flex items-center justify-between">
                       <div className="flex items-center gap-2 text-sm">
                         {order.isPlate ? (
                           <>
@@ -432,6 +436,73 @@ export const SavedOrdersSection = ({
                         >
                           <Trash2 className="h-3 w-3" />
                         </Button>
+                      </div>
+                    </div>
+
+                    {/* Mobile layout - 4 columns 2 rows */}
+                    <div className="sm:hidden">
+                      <div className="grid grid-cols-4 gap-2 text-xs">
+                        {/* Row 1: 제품명 / 재질 / 직경 / 봉재길이 */}
+                        <div className="flex flex-col">
+                          <span className="text-gray-500 text-xs">제품명</span>
+                          <span className="font-medium text-gray-900 truncate">
+                            {order.productName}
+                          </span>
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="text-gray-500 text-xs">재질</span>
+                          <span className="text-gray-700 truncate">
+                            {getMaterialTypeDisplay(order.materialType)}
+                          </span>
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="text-gray-500 text-xs">직경</span>
+                          <span className="text-gray-700 truncate">
+                            {order.isPlate ? (
+                              `${order.plateThickness}mm`
+                            ) : (
+                              order.shape === "rectangle" && order.width && order.height
+                                ? `${order.width}×${order.height}`
+                                : `${order.diameter}mm`
+                            )}
+                          </span>
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="text-gray-500 text-xs">봉재길이</span>
+                          <span className="text-gray-700 truncate">
+                            {order.isPlate ? `-` : `${order.standardBarLength}mm`}
+                          </span>
+                        </div>
+                        
+                        {/* Row 2: 봉 수 / 수량 / 금액 / 삭제버튼 */}
+                        <div className="flex flex-col mt-2">
+                          <span className="text-gray-500 text-xs">봉 수</span>
+                          <span className="text-gray-700">
+                            {order.isPlate ? `-` : `${order.barsNeeded}봉`}
+                          </span>
+                        </div>
+                        <div className="flex flex-col mt-2">
+                          <span className="text-gray-500 text-xs">수량</span>
+                          <span className="text-gray-700">
+                            {order.quantity}{order.isPlate ? '장' : '개'}
+                          </span>
+                        </div>
+                        <div className="flex flex-col mt-2">
+                          <span className="text-gray-500 text-xs">금액</span>
+                          <span className="font-semibold text-xs text-[#3182F6]">
+                            {Math.round(order.totalCost).toLocaleString()}원
+                          </span>
+                        </div>
+                        <div className="flex flex-col mt-2 items-center justify-end">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => removeOrder(order.id)}
+                            className="h-6 w-6 p-0 text-red-500 hover:text-red-700 border-red-200 hover:bg-red-50"
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   </div>

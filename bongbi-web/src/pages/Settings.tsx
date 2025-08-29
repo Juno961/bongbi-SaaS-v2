@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -63,14 +63,15 @@ const TabButton = ({ id, icon, label, active, onClick }: TabButtonProps) => (
   <button
     onClick={onClick}
     className={cn(
-      "flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all",
+      "flex flex-col sm:flex-row items-center gap-1 sm:gap-2 px-5 sm:px-8 py-2.5 sm:py-2.5 rounded-lg font-medium text-xs sm:text-sm transition-all shrink-0 min-w-[5rem] sm:min-w-[7rem]",
       active
         ? "bg-blue-600 text-white shadow-sm"
         : "bg-white text-gray-600 hover:bg-gray-50 hover:text-gray-900"
     )}
+    title={label}
   >
-    {icon}
-    {label}
+    <span className="shrink-0">{icon}</span>
+    <span className="text-xs sm:text-sm whitespace-nowrap">{label}</span>
   </button>
 );
 
@@ -158,6 +159,15 @@ const Settings = () => {
   const [activeTab, setActiveTab] = useState<SettingsTab>(initialTab);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingMaterial, setEditingMaterial] = useState<EditableMaterial | null>(null);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [newMaterial, setNewMaterial] = useState({
+    material: "",
+    standard_bar_length: 3000,
+    material_density: 7.85,
+    bar_unit_price: 0,
+    plate_unit_price: 0,
+    scrap_unit_price: 0,
+  });
   // Convert materialDefaults to editable format
   const [materials, setMaterials] = useState<EditableMaterial[]>(
     Object.entries(materialDefaults).map(([key, data]) => ({
@@ -235,6 +245,11 @@ const Settings = () => {
     scrapRatio: 100,
   });
 
+  // Refs for direct DOM manipulation
+  const headCutRef = useRef<HTMLInputElement>(null);
+  const tailCutRef = useRef<HTMLInputElement>(null);
+  const scrapRatioRef = useRef<HTMLInputElement>(null);
+
   // Load default values from localStorage on mount
   useEffect(() => {
     const storedDefaults = localStorage.getItem("defaultValues");
@@ -242,6 +257,10 @@ const Settings = () => {
       try {
         const defaults = JSON.parse(storedDefaults);
         setDefaultValues(defaults);
+        // Set input DOM values if refs are available
+        if (headCutRef.current) headCutRef.current.value = defaults.headCut.toString();
+        if (tailCutRef.current) tailCutRef.current.value = defaults.tailCut.toString();
+        if (scrapRatioRef.current) scrapRatioRef.current.value = defaults.scrapRatio.toString();
       } catch (error) {
         console.error("Failed to load default values:", error);
       }
@@ -252,40 +271,106 @@ const Settings = () => {
   const updateDefaultValues = (newValues: typeof defaultValues) => {
     setDefaultValues(newValues);
     localStorage.setItem("defaultValues", JSON.stringify(newValues));
-    
+
     // Dispatch custom event for same-tab updates
     window.dispatchEvent(new CustomEvent("defaultValuesChanged", {
       detail: newValues
     }));
   };
 
-  const addMaterial = () => {
-    const newMaterial: EditableMaterial = {
-      id: `new_${Date.now()}`,
+  // Safe number parsing function
+  const safeParseNumber = (value: string): number => {
+    if (!value || value.trim() === '') return 0;
+    const parsed = parseFloat(value);
+    return isNaN(parsed) ? 0 : parsed;
+  };
+
+  // Save all default values from form
+  const saveDefaultValues = () => {
+    const newValues = {
+      headCut: safeParseNumber(headCutRef.current?.value || '0'),
+      tailCut: safeParseNumber(tailCutRef.current?.value || '0'),
+      scrapRatio: safeParseNumber(scrapRatioRef.current?.value || '0'),
+    };
+
+    setDefaultValues(newValues);
+    localStorage.setItem("defaultValues", JSON.stringify(newValues));
+
+    // Dispatch custom event
+    window.dispatchEvent(new CustomEvent("defaultValuesChanged", {
+      detail: newValues
+    }));
+  };
+
+  // Initialize input values on mount
+  useEffect(() => {
+    if (headCutRef.current) {
+      headCutRef.current.value = defaultValues.headCut.toString();
+    }
+    if (tailCutRef.current) {
+      tailCutRef.current.value = defaultValues.tailCut.toString();
+    }
+    if (scrapRatioRef.current) {
+      scrapRatioRef.current.value = defaultValues.scrapRatio.toString();
+    }
+  }, [defaultValues]);
+
+  const openAddMaterialModal = () => {
+    setNewMaterial({
       material: "",
       standard_bar_length: 3000,
       material_density: 7.85,
       bar_unit_price: 0,
       plate_unit_price: 0,
       scrap_unit_price: 0,
+    });
+    setIsAddModalOpen(true);
+  };
+
+  const handleSaveNewMaterial = () => {
+    // Validation
+    if (!newMaterial.material.trim()) {
+      toast.error("소재명을 입력해주세요.");
+      return;
+    }
+
+    const newMaterialEntry: EditableMaterial = {
+      id: `new_${Date.now()}`,
+      ...newMaterial,
       isNew: true,
     };
-    const updatedMaterials = [...materials, newMaterial];
+
+    const updatedMaterials = [...materials, newMaterialEntry];
     setMaterials(updatedMaterials);
-    
+
     // Save to localStorage for persistence
     const materialDefaults = updatedMaterials.reduce((acc, material) => {
       const { id, isNew, ...materialData } = material;
       acc[id] = materialData;
       return acc;
     }, {} as Record<string, MaterialDefaults>);
-    
+
     localStorage.setItem("customMaterialDefaults", JSON.stringify(materialDefaults));
-    
+
     // Dispatch event for real-time updates
     window.dispatchEvent(new CustomEvent("materialDefaultsChanged", {
       detail: materialDefaults
     }));
+
+    toast.success("새 소재가 추가되었습니다.");
+    setIsAddModalOpen(false);
+  };
+
+  const handleCancelAddMaterial = () => {
+    setIsAddModalOpen(false);
+    setNewMaterial({
+      material: "",
+      standard_bar_length: 3000,
+      material_density: 7.85,
+      bar_unit_price: 0,
+      plate_unit_price: 0,
+      scrap_unit_price: 0,
+    });
   };
 
   const deleteMaterial = (id: string) => {
@@ -309,23 +394,54 @@ const Settings = () => {
 
   const updateMaterial = (
     id: string,
-    field: keyof MaterialDefaults,
-    value: string | number,
+    field?: keyof MaterialDefaults,
+    value?: string | number,
   ) => {
-    const updatedMaterials = materials.map((material) =>
-      material.id === id ? { ...material, [field]: value } : material,
-    );
+    const updatedMaterials = materials.map((material) => {
+      if (material.id === id) {
+        if (field !== undefined && value !== undefined) {
+          // Single field update
+          return { ...material, [field]: value };
+        } else {
+          // Full object update (for batch updates)
+          return material;
+        }
+      }
+      return material;
+    });
     setMaterials(updatedMaterials);
-    
+
     // Save to localStorage for persistence
     const materialDefaults = updatedMaterials.reduce((acc, material) => {
       const { id, isNew, ...materialData } = material;
       acc[id] = materialData;
       return acc;
     }, {} as Record<string, MaterialDefaults>);
-    
+
     localStorage.setItem("customMaterialDefaults", JSON.stringify(materialDefaults));
-    
+
+    // Dispatch event for real-time updates
+    window.dispatchEvent(new CustomEvent("materialDefaultsChanged", {
+      detail: materialDefaults
+    }));
+  };
+
+  // Batch update material with all fields at once
+  const updateMaterialBatch = (id: string, materialData: Partial<MaterialDefaults>) => {
+    const updatedMaterials = materials.map((material) =>
+      material.id === id ? { ...material, ...materialData } : material,
+    );
+    setMaterials(updatedMaterials);
+
+    // Save to localStorage for persistence
+    const materialDefaults = updatedMaterials.reduce((acc, material) => {
+      const { id, isNew, ...data } = material;
+      acc[id] = data;
+      return acc;
+    }, {} as Record<string, MaterialDefaults>);
+
+    localStorage.setItem("customMaterialDefaults", JSON.stringify(materialDefaults));
+
     // Dispatch event for real-time updates
     window.dispatchEvent(new CustomEvent("materialDefaultsChanged", {
       detail: materialDefaults
@@ -398,13 +514,16 @@ const Settings = () => {
 
   const handleSaveMaterial = () => {
     if (editingMaterial) {
-      updateMaterial(editingMaterial.id, "material", editingMaterial.material);
-      updateMaterial(editingMaterial.id, "standard_bar_length", editingMaterial.standard_bar_length);
-      updateMaterial(editingMaterial.id, "material_density", editingMaterial.material_density);
-      updateMaterial(editingMaterial.id, "bar_unit_price", editingMaterial.bar_unit_price);
-      updateMaterial(editingMaterial.id, "plate_unit_price", editingMaterial.plate_unit_price);
-      updateMaterial(editingMaterial.id, "scrap_unit_price", editingMaterial.scrap_unit_price);
-      
+      // Batch update all fields at once to avoid concurrency issues
+      updateMaterialBatch(editingMaterial.id, {
+        material: editingMaterial.material,
+        standard_bar_length: editingMaterial.standard_bar_length,
+        material_density: editingMaterial.material_density,
+        bar_unit_price: editingMaterial.bar_unit_price,
+        plate_unit_price: editingMaterial.plate_unit_price,
+        scrap_unit_price: editingMaterial.scrap_unit_price,
+      });
+
       toast.success("소재가 성공적으로 저장되었습니다.");
       setIsEditModalOpen(false);
       setEditingMaterial(null);
@@ -462,83 +581,78 @@ const Settings = () => {
   };
 
   // Tab Content Components
-  const DefaultsTab = () => (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Cutting Settings Card */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Wrench className="h-5 w-5" />
-              절삭 설정
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label>선두 로스 (mm)</Label>
-              <Input 
-                type="number" 
-                value={defaultValues.headCut}
-                onChange={(e) => {
-                  const newValues = {
-                    ...defaultValues,
-                    headCut: parseInt(e.target.value) || 0,
-                  };
-                  updateDefaultValues(newValues);
-                }}
-                className="text-lg"
-                placeholder="20"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>후미 로스 (mm)</Label>
-              <Input 
-                type="number" 
-                value={defaultValues.tailCut}
-                onChange={(e) => {
-                  const newValues = {
-                    ...defaultValues,
-                    tailCut: parseInt(e.target.value) || 0,
-                  };
-                  updateDefaultValues(newValues);
-                }}
-                className="text-lg"
-                placeholder="250"
-              />
-            </div>
-          </CardContent>
-        </Card>
+  const DefaultsTab = () => {
+    const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      saveDefaultValues();
+    };
 
-        {/* Scrap Settings Card */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Database className="h-5 w-5" />
-              스크랩 설정
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              <Label>환산 비율 (%)</Label>
-              <Input 
-                type="number" 
-                value={defaultValues.scrapRatio}
-                onChange={(e) => {
-                  const newValues = {
-                    ...defaultValues,
-                    scrapRatio: parseInt(e.target.value) || 0,
-                  };
-                  updateDefaultValues(newValues);
-                }}
-                className="text-lg"
-                placeholder="100"
-              />
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
-  );
+    return (
+      <form onSubmit={handleFormSubmit} className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Cutting Settings Card */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Wrench className="h-5 w-5" />
+                절삭 설정
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label>선두 로스 (mm)</Label>
+                <Input
+                  ref={headCutRef}
+                  type="number"
+                  defaultValue={defaultValues.headCut}
+                  name="headCut"
+                  className="text-lg"
+                  placeholder="20"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>후미 로스 (mm)</Label>
+                <Input
+                  ref={tailCutRef}
+                  type="number"
+                  defaultValue={defaultValues.tailCut}
+                  name="tailCut"
+                  className="text-lg"
+                  placeholder="250"
+                />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Scrap Settings Card */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Database className="h-5 w-5" />
+                스크랩 설정
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                <Label>환산 비율 (%)</Label>
+                <Input
+                  ref={scrapRatioRef}
+                  type="number"
+                  defaultValue={defaultValues.scrapRatio}
+                  name="scrapRatio"
+                  className="text-lg"
+                  placeholder="100"
+                />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Hidden submit button for form submission */}
+        <button type="submit" style={{ display: 'none' }} />
+      </form>
+    );
+  };
 
   const CalculationTab = () => (
     <Card>
@@ -584,7 +698,7 @@ const Settings = () => {
           <Construction className="h-5 w-5" />
           등록된 소재
         </h3>
-        <Button onClick={addMaterial}>
+        <Button onClick={openAddMaterialModal}>
           <Plus className="h-4 w-4 mr-2" />
           소재 추가
         </Button>
@@ -679,7 +793,7 @@ const Settings = () => {
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex space-x-1 bg-gray-100 rounded-lg p-1 mb-6">
+        <div className="flex flex-wrap gap-1 bg-gray-100 rounded-lg p-1 mb-6 overflow-x-auto">
           <TabButton 
             id="defaults" 
             icon={<Wrench className="h-4 w-4" />} 
@@ -828,6 +942,128 @@ const Settings = () => {
               </Button>
               <Button onClick={handleSaveMaterial}>
                 저장
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Add Material Modal */}
+        <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Plus className="h-5 w-5" />
+                새 소재 추가
+              </DialogTitle>
+              <DialogDescription>
+                새로운 소재의 상세 정보를 입력해주세요.
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* 기본 정보 */}
+                <div className="space-y-4">
+                  <h4 className="font-medium text-gray-900">기본 정보</h4>
+                  <div className="space-y-2">
+                    <Label>재료명 *</Label>
+                    <Input
+                      value={newMaterial.material}
+                      onChange={(e) => setNewMaterial({
+                        ...newMaterial,
+                        material: e.target.value
+                      })}
+                      placeholder="예: SS400, ST37-2, SUS304 등"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>표준 길이 (mm)</Label>
+                    <Input
+                      type="number"
+                      value={newMaterial.standard_bar_length}
+                      onChange={(e) => setNewMaterial({
+                        ...newMaterial,
+                        standard_bar_length: parseInt(e.target.value) || 0
+                      })}
+                      placeholder="3000"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>밀도 (g/cm³)</Label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      value={newMaterial.material_density}
+                      onChange={(e) => setNewMaterial({
+                        ...newMaterial,
+                        material_density: parseFloat(e.target.value) || 0
+                      })}
+                      placeholder="7.85"
+                    />
+                  </div>
+                </div>
+
+                {/* 가격 정보 */}
+                <div className="space-y-4">
+                  <h4 className="font-medium text-gray-900">가격 정보</h4>
+                  <div className="space-y-2">
+                    <Label>봉재 단가 (원/kg)</Label>
+                    <Input
+                      type="number"
+                      value={newMaterial.bar_unit_price}
+                      onChange={(e) => setNewMaterial({
+                        ...newMaterial,
+                        bar_unit_price: parseInt(e.target.value) || 0
+                      })}
+                      placeholder="0"
+                    />
+                  </div>
+                  {/* 판재 단가 활성화 설정에 따라 조건부 렌더링 */}
+                  {calculationSettings.enablePlatePrice ? (
+                    <div className="space-y-2">
+                      <Label>판재 단가 (원/kg)</Label>
+                      <Input
+                        type="number"
+                        value={newMaterial.plate_unit_price}
+                        onChange={(e) => setNewMaterial({
+                          ...newMaterial,
+                          plate_unit_price: parseInt(e.target.value) || 0
+                        })}
+                        placeholder="0"
+                      />
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      <Label className="text-gray-500">판재 단가 (비활성화됨)</Label>
+                      <div className="p-3 bg-gray-50 border rounded-md">
+                        <p className="text-sm text-gray-600">
+                          설정 &gt; 계산에서 "판재 단가 활성화"를 켜면 판재 전용 단가를 설정할 수 있습니다.
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                  <div className="space-y-2">
+                    <Label>스크랩 단가 (원/kg)</Label>
+                    <Input
+                      type="number"
+                      value={newMaterial.scrap_unit_price}
+                      onChange={(e) => setNewMaterial({
+                        ...newMaterial,
+                        scrap_unit_price: parseInt(e.target.value) || 0
+                      })}
+                      placeholder="0"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <DialogFooter>
+              <Button variant="outline" onClick={handleCancelAddMaterial}>
+                취소
+              </Button>
+              <Button onClick={handleSaveNewMaterial}>
+                추가
               </Button>
             </DialogFooter>
           </DialogContent>

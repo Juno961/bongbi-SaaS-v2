@@ -133,7 +133,7 @@ export const MaterialFormWizard = ({
   // Auto-generate product name
   const generateProductName = () => {
     const now = new Date();
-    const year = now.getFullYear();
+    const year = now.getFullYear().toString().slice(-2); // 연도 뒷 2자리만 사용
     const month = (now.getMonth() + 1).toString().padStart(2, "0");
     const day = now.getDate().toString().padStart(2, "0");
     const savedOrders = JSON.parse(localStorage.getItem("savedOrders") || "[]");
@@ -451,7 +451,7 @@ export const MaterialFormWizard = ({
                         value={formData.productName}
                         onChange={(e) => handleInputChange("productName", e.target.value)}
                         onKeyDown={(e) => handleKeyDown(e, "material-select")}
-                        placeholder="예: 20241201-001"
+                        placeholder="예: 250829-001"
                         className="input-modern"
                       />
             </div>
