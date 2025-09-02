@@ -1,5 +1,5 @@
 // API 기본 설정
-const API_BASE_URL = 'http://localhost:8001/api/v1';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 
 // column_master.json 기준 타입 정의
 export interface ValidationWarning {
@@ -168,8 +168,8 @@ class BongbiApiClient {
 
   // 루트 엔드포인트 확인
   async getApiInfo(): Promise<{ message: string; version: string; docs: string }> {
-    const rootUrl = this.baseURL.replace('/api/v1', '');
-    return fetch(rootUrl).then(res => res.json());
+    const rootUrl = this.baseURL.replace('/api/v1', '').replace('/api', '');
+    return fetch(rootUrl || '/').then(res => res.json());
   }
 
   // 노션 고객 문의 API
