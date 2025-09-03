@@ -1,5 +1,19 @@
 // API 기본 설정
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
+const normalizeApiBaseUrl = (url: string | undefined): string => {
+  if (!url) return '/api/v1/';
+  
+  // 선행 슬래시 추가
+  let normalized = url.startsWith('/') ? url : '/' + url;
+  
+  // 끝 슬래시 추가
+  if (!normalized.endsWith('/')) {
+    normalized += '/';
+  }
+  
+  return normalized;
+};
+
+const API_BASE_URL = normalizeApiBaseUrl(import.meta.env.VITE_API_BASE_URL);
 
 // column_master.json 기준 타입 정의
 export interface ValidationWarning {
@@ -92,13 +106,22 @@ export interface ScrapCalculateResponse {
 
 class BongbiApiClient {
   private baseURL: string;
+  private debugged = false;
 
   constructor(baseURL: string = API_BASE_URL) {
     this.baseURL = baseURL;
   }
 
   private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-    const url = `${this.baseURL}${endpoint}`;
+    // 중복 슬래시 방지를 위해 endpoint에서 선행 슬래시 제거
+    const cleanEndpoint = endpoint.startsWith('/') ? endpoint.slice(1) : endpoint;
+    const url = `${this.baseURL}${cleanEndpoint}`;
+    
+    // 첫 요청 시 디버그 출력
+    if (!this.debugged) {
+      console.debug('[API Debug] Final URL:', url);
+      this.debugged = true;
+    }
     
     const config: RequestInit = {
       headers: {
