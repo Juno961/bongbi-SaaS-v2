@@ -15,6 +15,11 @@ const normalizeApiBaseUrl = (url: string | undefined): string => {
 
 const API_BASE_URL = normalizeApiBaseUrl(import.meta.env.VITE_API_BASE_URL);
 
+// 가드: API_BASE_URL 체크
+if (!API_BASE_URL) {
+  throw new Error('[API] missing base URL');
+}
+
 // column_master.json 기준 타입 정의
 export interface ValidationWarning {
   type: string; // warning, error, info
@@ -106,22 +111,24 @@ export interface ScrapCalculateResponse {
 
 class BongbiApiClient {
   private baseURL: string;
-  private debugged = false;
 
   constructor(baseURL: string = API_BASE_URL) {
     this.baseURL = baseURL;
   }
 
   private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-    // 중복 슬래시 방지를 위해 endpoint에서 선행 슬래시 제거
-    const cleanEndpoint = endpoint.startsWith('/') ? endpoint.slice(1) : endpoint;
-    const url = `${this.baseURL}${cleanEndpoint}`;
-    
-    // 첫 요청 시 디버그 출력
-    if (!this.debugged) {
-      console.debug('[API Debug] Final URL:', url);
-      this.debugged = true;
+    // 가드: endpoint 체크
+    if (!endpoint || typeof endpoint !== 'string') {
+      throw new Error('[API] empty endpoint');
     }
+    
+    // 절대 URL 생성
+    const originBase = window.location.origin + API_BASE_URL;
+    const clean = (p: string) => p.replace(/^\/+/, '');
+    const fullUrl = new URL(clean(endpoint), originBase).toString();
+    
+    // 디버그 출력 (항상)
+    console.debug('[API Debug]', { base: API_BASE_URL, endpoint, url: fullUrl });
     
     const config: RequestInit = {
       headers: {
@@ -132,7 +139,7 @@ class BongbiApiClient {
     };
 
     try {
-      const response = await fetch(url, config);
+      const response = await fetch(fullUrl, config);
       
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
