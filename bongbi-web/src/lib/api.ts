@@ -122,10 +122,9 @@ class BongbiApiClient {
       throw new Error('[API] empty endpoint');
     }
     
-    // 절대 URL 생성
-    const originBase = window.location.origin + API_BASE_URL;
-    const clean = (p: string) => p.replace(/^\/+/, '');
-    const fullUrl = new URL(clean(endpoint), originBase).toString();
+    // 절대 URL 생성 (올바른 경로 결합)
+    const cleanEndpoint = endpoint.replace(/^\/+/, '');
+    const fullUrl = `${window.location.origin}${API_BASE_URL}${cleanEndpoint}`;
     
     // 디버그 출력 (항상)
     console.debug('[API Debug]', { base: API_BASE_URL, endpoint, url: fullUrl });
