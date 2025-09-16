@@ -15,6 +15,19 @@ const normalizeApiBaseUrl = (url: string | undefined): string => {
 
 const API_BASE_URL = normalizeApiBaseUrl(import.meta.env.VITE_API_BASE_URL);
 
+// 환경별 API URL 결정 로직
+const getApiUrl = (endpoint: string): string => {
+  const cleanEndpoint = endpoint.replace(/^\/+/, '');
+  
+  // 1. 절대 URL이 설정된 경우 (프로덕션)
+  if (API_BASE_URL.startsWith('http')) {
+    return `${API_BASE_URL}${cleanEndpoint}`;
+  }
+  
+  // 2. 상대 경로 (개발환경 - 프록시 사용)
+  return `${API_BASE_URL}${cleanEndpoint}`;
+};
+
 // 가드: API_BASE_URL 체크
 if (!API_BASE_URL) {
   throw new Error('[API] missing base URL');
@@ -111,9 +124,16 @@ export interface ScrapCalculateResponse {
 
 class BongbiApiClient {
   private baseURL: string;
+  private hardcodedApiUrl?: string;
 
   constructor(baseURL: string = API_BASE_URL) {
     this.baseURL = baseURL;
+    
+    // 하드코딩 테스트용 (window 객체에서 오버라이드 가능)
+    if (typeof window !== 'undefined' && (window as any).BONGBI_API_OVERRIDE) {
+      this.hardcodedApiUrl = (window as any).BONGBI_API_OVERRIDE;
+      console.warn('[API] 하드코딩된 API URL 사용:', this.hardcodedApiUrl);
+    }
   }
 
   private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
@@ -122,12 +142,20 @@ class BongbiApiClient {
       throw new Error('[API] empty endpoint');
     }
     
-    // 절대 URL 생성 (올바른 경로 결합)
-    const cleanEndpoint = endpoint.replace(/^\/+/, '');
-    const fullUrl = `${window.location.origin}${API_BASE_URL}${cleanEndpoint}`;
+    // 환경별 URL 생성 (하드코딩 우선)
+    const fullUrl = this.hardcodedApiUrl 
+      ? `${this.hardcodedApiUrl}${endpoint.replace(/^\/+/, '')}`
+      : getApiUrl(endpoint);
     
     // 디버그 출력 (항상)
-    console.debug('[API Debug]', { base: API_BASE_URL, endpoint, url: fullUrl });
+    console.debug('[API Debug]', { 
+      base: API_BASE_URL, 
+      endpoint, 
+      url: fullUrl,
+      isAbsolute: API_BASE_URL.startsWith('http'),
+      hardcoded: !!this.hardcodedApiUrl,
+      origin: typeof window !== 'undefined' ? window.location.origin : 'N/A'
+    });
     
     const config: RequestInit = {
       headers: {
