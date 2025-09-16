@@ -167,18 +167,28 @@ class BongbiApiClient {
 
     try {
       const response = await fetch(fullUrl, config);
-      
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error((errorData && (errorData.detail || errorData.message)) || `HTTP ${response.status}: ${response.statusText}`);
+
+      let data: any = null;
+      try {
+        data = await response.json();
+      } catch {
+        data = null;
       }
-      
-      return await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          (data && (data.detail || data.message)) ||
+          `HTTP ${response.status}: ${response.statusText}`
+        );
+      }
+
+      return data as T;
     } catch (error) {
       console.error('API 요청 실패:', error);
       throw error;
     }
   }
+
 
   // 봉재 계산 API
   async calculateRod(data: RodCalculateRequest): Promise<RodCalculateResponse> {
