@@ -54,32 +54,9 @@ interface ValidationWarning {
   suggestion?: string;
 }
 
-interface FormData {
-  productName: string;
-  quantity: string;
-  materialType: string;
-  shape: string;
-  diameter: string;
-  width: string;
-  height: string;
-  plateThickness: string;
-  plateWidth: string;
-  plateLength: string;
-  productLength: string;
-  headCut: string;
-  tailCut: string;
-  cuttingLoss: string;
-  customer: string;
-  productWeight: string;
-  actualProductWeight: string; // 제품 실 중량
-  recoveryRatio: string;
-  scrapUnitPrice: string;
-  scrapPrice: string;
-  standardBarLength: string;
-  materialDensity: string;
-  materialPrice: string;
-  plateUnitPrice: string;
-}
+import { MaterialFormData } from "@/types/MaterialForm";
+
+type FormData = MaterialFormData;
 
 interface ResultsPanelProps {
   results: CalculationResults | null;
@@ -192,7 +169,6 @@ export const ResultsPanel = ({
       actualProductWeight: formData.actualProductWeight || "",
       recoveryRatio: formData.recoveryRatio || "",
       scrapUnitPrice: formData.scrapUnitPrice || "",
-      scrapPrice: formData.scrapPrice || "",
       standardBarLength: results.standardBarLength,
       materialDensity: formData.materialDensity || "",
       materialPrice: formData.materialPrice || "",

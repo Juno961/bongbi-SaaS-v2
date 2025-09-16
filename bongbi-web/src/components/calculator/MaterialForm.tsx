@@ -39,33 +39,7 @@ import {
   getMaterialDisplayName,
 } from "@/data/materialDefaults";
 
-interface MaterialFormData {
-  productName: string;
-  materialType: string;
-  shape: string;
-  diameter: string;
-  width: string;
-  height: string;
-  productLength: string;
-  cuttingLoss: string;
-  headCut: string;
-  tailCut: string;
-  quantity: string;
-  customer: string;
-  productWeight: string;
-  actualProductWeight: string; // 제품 실 중량 (사용자 입력)
-  recoveryRatio: string;
-  scrapUnitPrice: string;
-  scrapPrice: string;
-  standardBarLength: string;
-  materialDensity: string;
-  materialPrice: string;
-  // Plate-specific fields
-  plateThickness: string;
-  plateWidth: string;
-  plateLength: string;
-  plateUnitPrice: string;
-}
+import { MaterialFormData } from "@/types/MaterialForm";
 
 interface MaterialFormProps {
   onCalculate: (data: MaterialFormData) => void;
@@ -97,7 +71,6 @@ export const MaterialForm = ({
     actualProductWeight: "",
     recoveryRatio: "", // 기본값이지만 설정에서 변경 가능
     scrapUnitPrice: "읽기 전용",
-    scrapPrice: "",
     standardBarLength: "",
     materialDensity: "",
     materialPrice: "",
@@ -121,7 +94,7 @@ export const MaterialForm = ({
   const handleManualCalculate = () => {
     const calculationData = {
       ...formData,
-      scrapUnitPrice: formData.scrapPrice, // Map scrapPrice to scrapUnitPrice for calculation
+      scrapUnitPrice: formData.scrapUnitPrice, // Use scrapUnitPrice directly
     };
     onCalculate(calculationData);
   };
@@ -193,7 +166,7 @@ export const MaterialForm = ({
           materialDensity: newDefaults.material_density.toString(),
           materialPrice: newDefaults.bar_unit_price.toString(),
           plateUnitPrice: newDefaults.plate_unit_price.toString(),
-          scrapPrice: newDefaults.scrap_unit_price.toString(),
+          scrapUnitPrice: newDefaults.scrap_unit_price.toString(),
         }));
         
         // 실시간 재계산 트리거 강화
@@ -276,7 +249,7 @@ export const MaterialForm = ({
             materialDensity: defaults.material_density.toString(),
             materialPrice: defaults.bar_unit_price.toString(),
             plateUnitPrice: defaults.plate_unit_price.toString(),
-            scrapPrice: defaults.scrap_unit_price.toString(),
+            scrapUnitPrice: defaults.scrap_unit_price.toString(),
           }));
         }
       }
@@ -318,8 +291,7 @@ export const MaterialForm = ({
       productWeight: "",
       actualProductWeight: "",
       recoveryRatio: formData.recoveryRatio, // Preserve recovery ratio
-      scrapUnitPrice: "읽기 전용",
-      scrapPrice: formData.scrapPrice, // Preserve current scrap price
+      scrapUnitPrice: formData.scrapUnitPrice, // Preserve current scrap price
       standardBarLength: formData.standardBarLength, // Preserve material defaults
       materialDensity: formData.materialDensity, // Preserve material defaults
       materialPrice: formData.materialPrice, // Preserve material defaults
@@ -336,7 +308,7 @@ export const MaterialForm = ({
     if (autoCalculateEnabled) {
       const calculationData = {
         ...resetData,
-        scrapUnitPrice: resetData.scrapPrice, // Map scrapPrice to scrapUnitPrice for calculation
+        scrapUnitPrice: resetData.scrapUnitPrice, // Use scrapUnitPrice directly
       };
       onCalculate(calculationData);
     }
@@ -350,7 +322,7 @@ export const MaterialForm = ({
       'diameter', 'width', 'height', 'productLength', 'quantity',
       'actualProductWeight', 'cuttingLoss', 'headCut', 'tailCut',
       'plateThickness', 'plateWidth', 'plateLength', 'materialDensity',
-      'materialPrice', 'plateUnitPrice', 'scrapPrice', 'recoveryRatio'
+      'materialPrice', 'plateUnitPrice', 'scrapUnitPrice', 'recoveryRatio'
     ];
 
     if (numericFields.includes(field) && value !== "") {
@@ -370,7 +342,7 @@ export const MaterialForm = ({
         materialDensity: "재질 밀도",
         materialPrice: "봉재 단가",
         plateUnitPrice: "판재 단가",
-        scrapPrice: "스크랩 단가",
+        scrapUnitPrice: "스크랩 단가",
         recoveryRatio: "환산 비율"
       };
       newValue = validateNumericInput(value, fieldLabels[field] || field);
@@ -394,7 +366,7 @@ export const MaterialForm = ({
           materialDensity: defaults.material_density.toString(),
           materialPrice: defaults.bar_unit_price.toString(),
           plateUnitPrice: defaults.plate_unit_price.toString(),
-          scrapPrice: defaults.scrap_unit_price.toString(), // Set default scrap price
+          scrapUnitPrice: defaults.scrap_unit_price.toString(), // Set default scrap price
         };
       }
     }
@@ -408,7 +380,7 @@ export const MaterialForm = ({
     if (autoCalculateEnabled) {
       const calculationData = {
         ...updatedData,
-        scrapUnitPrice: updatedData.scrapPrice, // Map scrapPrice to scrapUnitPrice for calculation
+        scrapUnitPrice: updatedData.scrapUnitPrice, // Use scrapUnitPrice directly
       };
       onCalculate(calculationData);
     }
@@ -475,15 +447,15 @@ export const MaterialForm = ({
   const loadScrapDefaults = () => {
     // Load scrap ratio from settings
     let defaultScrapRatio = "100"; // fallback default
-    const storedSettings = localStorage.getItem("calculationSettings");
-    if (storedSettings) {
+    const storedDefaults = localStorage.getItem("defaultValues");
+    if (storedDefaults) {
       try {
-        const settings = JSON.parse(storedSettings);
-        if (settings.defaultValues && settings.defaultValues.scrapRatio) {
-          defaultScrapRatio = settings.defaultValues.scrapRatio.toString();
+        const defaults = JSON.parse(storedDefaults);
+        if (defaults.scrapRatio) {
+          defaultScrapRatio = defaults.scrapRatio.toString();
         }
       } catch (error) {
-        console.error("Failed to load settings:", error);
+        console.error("Failed to load default values:", error);
       }
     }
 
@@ -500,7 +472,7 @@ export const MaterialForm = ({
     setFormData(prev => ({
       ...prev,
       recoveryRatio: defaultScrapRatio,
-      scrapPrice: defaultScrapPrice
+      scrapUnitPrice: defaultScrapPrice
     }));
 
     // Reset custom recovery ratio state
@@ -520,7 +492,7 @@ export const MaterialForm = ({
         ...prev,
         actualProductWeight: "",
         recoveryRatio: "",
-        scrapPrice: formData.materialType ? getMaterialDefaults(formData.materialType)?.scrap_unit_price.toString() || "" : ""
+        scrapUnitPrice: formData.materialType ? getMaterialDefaults(formData.materialType)?.scrap_unit_price.toString() || "" : ""
       }));
       setIsCustomRecoveryRatio(false);
     }
@@ -1281,10 +1253,10 @@ export const MaterialForm = ({
                           onKeyDown={(e) => {
                             if (e.key === "Enter") {
                               e.preventDefault();
-                              const scrapPriceField =
-                                document.getElementById("scrapPrice");
-                              if (scrapPriceField) {
-                                scrapPriceField.focus();
+                              const scrapUnitPriceField =
+                                document.getElementById("scrapUnitPrice");
+                              if (scrapUnitPriceField) {
+                                scrapUnitPriceField.focus();
                               }
                             }
                           }}
@@ -1326,18 +1298,18 @@ export const MaterialForm = ({
                   </div>
                   <div className="space-y-2">
                     <Label
-                      htmlFor="scrapPrice"
+                      htmlFor="scrapUnitPrice"
                       className="text-sm font-medium text-gray-700"
                     >
                       스크랩 단가 (₩/kg)
                     </Label>
                     <Input
-                      id="scrapPrice"
+                      id="scrapUnitPrice"
                       type="number"
                       min="0"
-                      value={formData.scrapPrice}
+                      value={formData.scrapUnitPrice}
                       onChange={(e) =>
-                        handleInputChange("scrapPrice", e.target.value)
+                        handleInputChange("scrapUnitPrice", e.target.value)
                       }
                       onKeyDown={(e) => {
                         if (e.key === "Enter") {

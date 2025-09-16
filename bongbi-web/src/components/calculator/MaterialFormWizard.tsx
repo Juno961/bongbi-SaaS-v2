@@ -47,32 +47,7 @@ import {
   getMaterialDisplayName,
 } from "@/data/materialDefaults";
 
-interface MaterialFormData {
-  productName: string;
-  materialType: string;
-  shape: string;
-  diameter: string;
-  width: string;
-  height: string;
-  productLength: string;
-  cuttingLoss: string;
-  headCut: string;
-  tailCut: string;
-  quantity: string;
-  customer: string;
-  productWeight: string;
-  actualProductWeight: string;
-  recoveryRatio: string;
-  scrapUnitPrice: string;
-  scrapPrice: string;
-  standardBarLength: string;
-  materialDensity: string;
-  materialPrice: string;
-  plateThickness: string;
-  plateWidth: string;
-  plateLength: string;
-  plateUnitPrice: string;
-}
+import { MaterialFormData } from "@/types/MaterialForm";
 
 interface MaterialFormWizardProps {
   onCalculate: (data: MaterialFormData) => void;
@@ -106,7 +81,6 @@ export const MaterialFormWizard = ({
     actualProductWeight: "",
     recoveryRatio: "100",
     scrapUnitPrice: "읽기 전용",
-    scrapPrice: "",
     standardBarLength: "",
     materialDensity: "",
     materialPrice: "",
@@ -159,7 +133,7 @@ export const MaterialFormWizard = ({
             materialDensity: defaults.material_density.toString(),
             materialPrice: defaults.bar_unit_price.toString(),
             plateUnitPrice: defaults.plate_unit_price.toString(),
-            scrapPrice: defaults.scrap_unit_price.toString(),
+            scrapUnitPrice: defaults.scrap_unit_price.toString(),
           }));
         }
       }
@@ -210,7 +184,7 @@ export const MaterialFormWizard = ({
           materialDensity: newDefaults.material_density?.toString() || prev.materialDensity,
           materialPrice: newDefaults.bar_unit_price?.toString() || prev.materialPrice,
           plateUnitPrice: newDefaults.plate_unit_price?.toString() || prev.plateUnitPrice,
-          scrapPrice: newDefaults.scrap_unit_price?.toString() || prev.scrapPrice,
+          scrapUnitPrice: newDefaults.scrap_unit_price?.toString() || prev.scrapUnitPrice,
         }));
         
         // 실시간 재계산 트리거 강화
@@ -227,7 +201,7 @@ export const MaterialFormWizard = ({
             const calculationData = {
               ...formData,
               ...newDefaults, // 새로운 기본값들 적용
-              scrapUnitPrice: newDefaults.scrap_unit_price?.toString() || formData.scrapPrice,
+              scrapUnitPrice: newDefaults.scrap_unit_price?.toString() || formData.scrapUnitPrice,
               recoveryRatio: isScrapCalculationEnabled && formData.recoveryRatio ? formData.recoveryRatio : undefined,
               actualProductWeight: isScrapCalculationEnabled && formData.actualProductWeight ? formData.actualProductWeight : undefined,
             };
@@ -275,7 +249,7 @@ export const MaterialFormWizard = ({
         if (isBasicDataComplete) {
           const calculationData = {
             ...newData,
-            scrapUnitPrice: newData.scrapPrice,
+            scrapUnitPrice: newData.scrapUnitPrice,
             // Include actual recovery ratio when scrap is enabled, undefined when disabled
             recoveryRatio: isScrapCalculationEnabled && newData.recoveryRatio ? newData.recoveryRatio : undefined,
             actualProductWeight: isScrapCalculationEnabled && newData.actualProductWeight ? newData.actualProductWeight : undefined,
@@ -309,7 +283,7 @@ export const MaterialFormWizard = ({
         materialDensity: defaults.material_density.toString(),
         materialPrice: defaults.bar_unit_price.toString(),
         plateUnitPrice: defaults.plate_unit_price.toString(),
-        scrapPrice: defaults.scrap_unit_price.toString(),
+        scrapUnitPrice: defaults.scrap_unit_price.toString(),
         // 스크랩 환산비율은 설정메뉴 기본값 사용
         recoveryRatio: prev.recoveryRatio || "80",
       }));
@@ -320,7 +294,7 @@ export const MaterialFormWizard = ({
   const handleManualCalculate = () => {
     const calculationData = {
       ...formData,
-      scrapUnitPrice: formData.scrapPrice,
+      scrapUnitPrice: formData.scrapUnitPrice,
       // Include actual recovery ratio when scrap is enabled, undefined when disabled
       recoveryRatio: isScrapCalculationEnabled && formData.recoveryRatio ? formData.recoveryRatio : undefined,
       actualProductWeight: isScrapCalculationEnabled && formData.actualProductWeight ? formData.actualProductWeight : undefined,
@@ -358,8 +332,7 @@ export const MaterialFormWizard = ({
       productWeight: "",
       actualProductWeight: "",
       recoveryRatio: "100",
-      scrapUnitPrice: "읽기 전용",
-      scrapPrice: formData.scrapPrice, // Keep current scrap price
+      scrapUnitPrice: formData.scrapUnitPrice, // Keep current scrap price
       standardBarLength: formData.standardBarLength, // Keep material defaults
       materialDensity: formData.materialDensity,
       materialPrice: formData.materialPrice,
@@ -379,19 +352,19 @@ export const MaterialFormWizard = ({
   };
 
   // Validation functions
-  const isStep1Valid = () => {
-    return formData.materialType && formData.productName;
+  const isStep1Valid = (): boolean => {
+    return !!(formData.materialType && formData.productName);
   };
 
-  const isStep2Valid = () => {
+  const isStep2Valid = (): boolean => {
     if (materialType === "rod") {
-      return formData.shape && 
+      return !!(formData.shape && 
         ((formData.shape === "rectangle" && formData.width && formData.height) ||
          (formData.shape !== "rectangle" && formData.diameter)) &&
-        formData.productLength && formData.quantity;
+        formData.productLength && formData.quantity);
     } else {
-      return formData.plateThickness && formData.plateWidth && 
-             formData.plateLength && formData.quantity;
+      return !!(formData.plateThickness && formData.plateWidth && 
+             formData.plateLength && formData.quantity);
     }
   };
 
@@ -502,7 +475,7 @@ export const MaterialFormWizard = ({
                   </div>
                   <div>
                     <span className="text-gray-600">스크랩 단가:</span>
-                    <span className="ml-1 font-medium">{parseInt(formData.scrapPrice).toLocaleString()} ₩/kg</span>
+                    <span className="ml-1 font-medium">{parseInt(formData.scrapUnitPrice).toLocaleString()} ₩/kg</span>
                   </div>
                 </div>
               </CardContent>
@@ -854,7 +827,7 @@ export const MaterialFormWizard = ({
                       </span>
                     </div>
                     <p className="text-xs text-green-700">
-                      스크랩 단가: {parseInt(formData.scrapPrice || '0').toLocaleString()} ₩/kg
+                      스크랩 단가: {parseInt(formData.scrapUnitPrice || '0').toLocaleString()} ₩/kg
                     </p>
                   </div>
                 </div>

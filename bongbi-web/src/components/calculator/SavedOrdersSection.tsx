@@ -34,7 +34,6 @@ interface OrderItem {
   actualProductWeight: string; // 제품 실 중량
   recoveryRatio: string;
   scrapUnitPrice: string;
-  scrapPrice: string;
   materialDensity: string;
   materialPrice: string;
   plateUnitPrice: string;

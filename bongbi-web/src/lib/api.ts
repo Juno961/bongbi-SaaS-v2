@@ -223,10 +223,9 @@ class BongbiApiClient {
     return this.request<{ status: string; version: string; column_master_compliant: boolean }>('/health');
   }
 
-  // 루트 엔드포인트 확인
-  async getApiInfo(): Promise<{ message: string; version: string; docs: string }> {
-    const rootUrl = this.baseURL.replace('/api/v1', '').replace('/api', '');
-    return fetch(rootUrl || '/').then(res => res.json());
+  // API 정보 확인 (수정)
+  async getApiInfo(): Promise<{ status: string; version: string; column_master_compliant: boolean }> {
+    return this.request<{ status: string; version: string; column_master_compliant: boolean }>('/health');
   }
 
   // 노션 고객 문의 API
@@ -265,10 +264,9 @@ export const convertFormToRodRequest = (formData: any): RodCalculateRequest => {
     ? parseFloat(formData.recoveryRatio) 
     : undefined;
   
-  // 컬럼마스터 별칭 지원: scrapPrice → scrapUnitPrice
-  const scrapUnitPrice = formData.scrapPrice || formData.scrapUnitPrice;
-  const scrapPrice = scrapUnitPrice && parseFloat(scrapUnitPrice) > 0 
-    ? parseFloat(scrapUnitPrice) 
+  // 단일 scrapUnitPrice 필드 사용
+  const scrapPrice = formData.scrapUnitPrice && parseFloat(formData.scrapUnitPrice) > 0 
+    ? parseFloat(formData.scrapUnitPrice) 
     : undefined;
 
   const request = {
@@ -299,7 +297,7 @@ export const convertFormToRodRequest = (formData: any): RodCalculateRequest => {
       scrapUnitPrice: request.scrapUnitPrice,
       originalData: {
         recoveryRatio: formData.recoveryRatio,
-        scrapPrice: formData.scrapUnitPrice || formData.scrapPrice
+        scrapPrice: formData.scrapUnitPrice
       }
     });
   }
