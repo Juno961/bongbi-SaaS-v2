@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
-import os, logging
+import os
 
 from app.api.calculate_router import router as calculate_router
 from app.api.notion_router import router as notion_router
@@ -9,7 +9,7 @@ from app.api.notion_router import router as notion_router
 # 환경변수 로드
 load_dotenv()
 
-# 환경변수 상태 로깅
+# 환경변수 상태 출력
 for k in ("NOTION_TOKEN", "NOTION_DATABASE_ID", "ENVIRONMENT", "DEBUG"):
     v = os.getenv(k, "")
     print(f"[ENV] {k} len={len(v)} status={'OK' if v else 'MISSING'}")
@@ -41,4 +41,12 @@ async def root():
         "message": "봉비서 API가 정상적으로 동작하고 있습니다!",
         "version": "2.1.0",
         "docs": "/docs"
+    }
+
+# 환경변수 디버그 엔드포인트
+@app.get("/debug/env")
+async def debug_env():
+    return {
+        k: ("OK", len(os.getenv(k, ""))) if os.getenv(k) else "MISSING"
+        for k in ("NOTION_TOKEN", "NOTION_DATABASE_ID", "ENVIRONMENT", "DEBUG")
     }
