@@ -12,7 +12,7 @@ load_dotenv()
 # 환경변수 상태 로깅
 for k in ("NOTION_TOKEN", "NOTION_DATABASE_ID", "ENVIRONMENT", "DEBUG"):
     v = os.getenv(k, "")
-    logging.info(f"[ENV] {k} len={len(v)} status={'OK' if v else 'MISSING'}")
+    print(f"[ENV] {k} len={len(v)} status={'OK' if v else 'MISSING'}")
 
 app = FastAPI(
     title="봉비서 API",
