@@ -145,7 +145,7 @@ export const Header = () => {
                 <Avatar className="h-10 w-10">
                   <AvatarImage src="/placeholder.svg" alt="Profile" />
                   <AvatarFallback className="bg-primary text-primary-foreground">
-                    JD
+                    김
                   </AvatarFallback>
                 </Avatar>
               </Button>
@@ -153,9 +153,9 @@ export const Header = () => {
             <DropdownMenuContent className="w-56" align="end" forceMount>
               <DropdownMenuLabel className="font-normal">
                 <div className="flex flex-col space-y-1">
-                  <p className="text-sm font-medium leading-none">John Doe</p>
+                  <p className="text-sm font-medium leading-none">김가공</p>
                   <p className="text-xs leading-none text-muted-foreground">
-                    john.doe@factory.com
+                    gagong@allcnc.com
                   </p>
                 </div>
               </DropdownMenuLabel>
