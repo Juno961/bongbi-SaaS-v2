@@ -45,6 +45,8 @@ import {
   materialDefaults,
   getMaterialDefaults,
   getMaterialDisplayName,
+  getAllMaterials,
+  getMaterialKeys,
 } from "@/data/materialDefaults";
 
 import { MaterialFormData } from "@/types/MaterialForm";
@@ -92,6 +94,7 @@ export const MaterialFormWizard = ({
 
   const [isScrapCalculationEnabled, setIsScrapCalculationEnabled] = useState(false);
   const [isFirstVisit, setIsFirstVisit] = useState(false);
+  const [availableMaterials, setAvailableMaterials] = useState<Record<string, any>>(getAllMaterials());
 
   // Check if this is user's first visit
   useEffect(() => {
@@ -175,6 +178,9 @@ export const MaterialFormWizard = ({
 
     // Handle material defaults changes
     const handleMaterialDefaultsChange = (e: CustomEvent) => {
+      // Update available materials list
+      setAvailableMaterials(getAllMaterials());
+      
       // If current material type is affected, update form data
       if (formData.materialType && e.detail[formData.materialType]) {
         const newDefaults = e.detail[formData.materialType];
@@ -442,7 +448,7 @@ export const MaterialFormWizard = ({
                   <SelectValue placeholder="재료를 선택하세요" />
                 </SelectTrigger>
                 <SelectContent>
-                  {Object.entries(materialDefaults).map(([key, data]) => (
+                  {Object.entries(availableMaterials).map(([key, data]) => (
                     <SelectItem key={key} value={key}>
                       {getMaterialDisplayName(key)}
                     </SelectItem>

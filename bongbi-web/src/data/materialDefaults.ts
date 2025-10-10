@@ -86,6 +86,30 @@ export const getMaterialDisplayName = (materialKey: string): string => {
   return defaults ? defaults.material : materialKey;
 };
 
+// Helper function to get all available materials (built-in + custom)
+export const getAllMaterials = (): Record<string, MaterialDefaults> => {
+  // Start with built-in materials
+  const allMaterials = { ...materialDefaults };
+  
+  // Add custom materials from localStorage
+  try {
+    const customDefaults = localStorage.getItem("customMaterialDefaults");
+    if (customDefaults) {
+      const parsed = JSON.parse(customDefaults);
+      Object.assign(allMaterials, parsed);
+    }
+  } catch (error) {
+    console.error("Failed to load custom material defaults:", error);
+  }
+  
+  return allMaterials;
+};
+
+// Helper function to get material keys for dropdown options
+export const getMaterialKeys = (): string[] => {
+  return Object.keys(getAllMaterials());
+};
+
 // Helper function to get appropriate price based on material type
 export const getMaterialPrice = (
   materialKey: string,

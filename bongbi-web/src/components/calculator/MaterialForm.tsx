@@ -37,6 +37,8 @@ import {
   materialDefaults,
   getMaterialDefaults,
   getMaterialDisplayName,
+  getAllMaterials,
+  getMaterialKeys,
 } from "@/data/materialDefaults";
 
 import { MaterialFormData } from "@/types/MaterialForm";
@@ -89,6 +91,7 @@ export const MaterialForm = ({
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isBasicInfoOpen, setIsBasicInfoOpen] = useState(false);
   const [isProductNameFocused, setIsProductNameFocused] = useState(false);
+  const [availableMaterials, setAvailableMaterials] = useState<Record<string, any>>(getAllMaterials());
 
   // 수동 계산 함수
   const handleManualCalculate = () => {
@@ -157,6 +160,9 @@ export const MaterialForm = ({
   // 소재 기본값 설정 변경 감지
   useEffect(() => {
     const handleMaterialDefaultsChange = (e: CustomEvent) => {
+      // Update available materials list
+      setAvailableMaterials(getAllMaterials());
+      
       // 현재 선택된 재료가 변경된 경우 업데이트
       if (formData.materialType && e.detail[formData.materialType]) {
         const newDefaults = e.detail[formData.materialType];
@@ -238,7 +244,7 @@ export const MaterialForm = ({
 
     // Initialize with first available material defaults if no material is selected
     if (!formData.materialType) {
-      const firstMaterialKey = Object.keys(materialDefaults)[0];
+      const firstMaterialKey = Object.keys(availableMaterials)[0];
       if (firstMaterialKey) {
         const defaults = getMaterialDefaults(firstMaterialKey);
         if (defaults) {
