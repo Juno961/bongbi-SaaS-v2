@@ -96,12 +96,14 @@ export const getAllMaterials = (): Record<string, MaterialDefaults> => {
     const customDefaults = localStorage.getItem("customMaterialDefaults");
     if (customDefaults) {
       const parsed = JSON.parse(customDefaults);
+      console.log("📦 [getAllMaterials] localStorage에서 로드된 데이터:", parsed);
       Object.assign(allMaterials, parsed);
     }
   } catch (error) {
     console.error("Failed to load custom material defaults:", error);
   }
   
+  console.log("🎯 [getAllMaterials] 최종 소재 목록:", Object.keys(allMaterials));
   return allMaterials;
 };
 

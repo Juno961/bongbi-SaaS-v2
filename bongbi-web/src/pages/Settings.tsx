@@ -179,10 +179,17 @@ const Settings = () => {
   // Load custom material defaults from localStorage on mount
   useEffect(() => {
     const storedMaterials = localStorage.getItem("customMaterialDefaults");
+    console.log("📂 [Settings] 초기화 - localStorage 확인:", storedMaterials ? "있음" : "없음");
     if (storedMaterials) {
       try {
         const customDefaults = JSON.parse(storedMaterials);
-        const loadedMaterials = Object.entries(customDefaults).map(([key, data]) => ({
+        console.log("📂 [Settings] localStorage 데이터:", customDefaults);
+        // Merge built-in materials with custom materials
+        const allMaterials: Record<string, MaterialDefaults> = { ...materialDefaults };
+        Object.assign(allMaterials, customDefaults);
+        
+        console.log("📂 [Settings] 병합된 소재 목록:", Object.keys(allMaterials));
+        const loadedMaterials = Object.entries(allMaterials).map(([key, data]) => ({
           id: key,
           ...(data as MaterialDefaults),
         }));
@@ -350,6 +357,8 @@ const Settings = () => {
       return acc;
     }, {} as Record<string, MaterialDefaults>);
 
+    console.log("💾 [Settings] 저장할 소재 목록:", Object.keys(materialDefaults));
+    console.log("💾 [Settings] 저장할 전체 데이터:", materialDefaults);
     localStorage.setItem("customMaterialDefaults", JSON.stringify(materialDefaults));
 
     // Dispatch event for real-time updates

@@ -94,7 +94,10 @@ export const MaterialFormWizard = ({
 
   const [isScrapCalculationEnabled, setIsScrapCalculationEnabled] = useState(false);
   const [isFirstVisit, setIsFirstVisit] = useState(false);
-  const [availableMaterials, setAvailableMaterials] = useState<Record<string, any>>(getAllMaterials());
+  const [availableMaterials, setAvailableMaterials] = useState<Record<string, any>>(() => {
+    console.log("🚀 [MaterialFormWizard] 초기화 - getAllMaterials() 호출");
+    return getAllMaterials();
+  });
 
   // Check if this is user's first visit
   useEffect(() => {
@@ -178,8 +181,11 @@ export const MaterialFormWizard = ({
 
     // Handle material defaults changes
     const handleMaterialDefaultsChange = (e: CustomEvent) => {
+      console.log("🔔 [MaterialFormWizard] materialDefaultsChanged 이벤트 받음:", e.detail);
       // Update available materials list
-      setAvailableMaterials(getAllMaterials());
+      const updatedMaterials = getAllMaterials();
+      console.log("🔄 [MaterialFormWizard] 업데이트된 소재 목록:", Object.keys(updatedMaterials));
+      setAvailableMaterials(updatedMaterials);
       
       // If current material type is affected, update form data
       if (formData.materialType && e.detail[formData.materialType]) {
