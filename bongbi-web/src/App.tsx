@@ -10,8 +10,19 @@ import OrderHistory from "./pages/OrderHistory";
 import Settings from "./pages/Settings";
 import Help from "./pages/Help";
 import NotFound from "./pages/NotFound";
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
+import { sendPageView } from "./lib/analytics";
 
 const queryClient = new QueryClient();
+
+const RouteChangeHandler = () => {
+  const location = useLocation();
+  useEffect(() => {
+    sendPageView(location.pathname + location.search);
+  }, [location.pathname, location.search]);
+  return null;
+};
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -19,6 +30,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <RouteChangeHandler />
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/dashboard" element={<Dashboard />} />

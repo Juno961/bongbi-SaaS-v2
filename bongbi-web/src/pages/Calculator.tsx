@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { Save, Download, Share, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { OnboardingTour } from "@/components/ui/onboarding-tour";
+import analytics from "@/lib/analytics";
 // API 클라이언트로 대체
 import {
   calculateRodMaterial,
@@ -184,6 +185,14 @@ const Calculator = () => {
   };
 
   const calculateMaterials = async (data: MaterialFormData) => {
+    // analytics: calculation started (no PII)
+    try {
+      analytics.track("calculation_started", {
+        material_type: data.materialType,
+        shape: data.shape,
+        has_plate: (activeTab === "sheet")
+      });
+    } catch {}
     // 새로운 계산 시작 시 저장 상태 초기화
     setLastSavedData(null);
     setIsRecentlySaved(false);
@@ -258,6 +267,30 @@ const Calculator = () => {
       }
       
       // Toast 중복 방지: 마지막 토스트 후 2초가 지난 경우에만 표시
+      // analytics: calculation complete
+      try {
+        const r = (prev => prev) (results); // no-op to keep structure, ensure no PII
+      } catch {}
+      try {
+        const res = (activeTab === "sheet") ? (results as any) : (results as any);
+        // use freshly computed results from state variables after setResults; track from local variables instead
+      } catch {}
+      try {
+        const r = (activeTab === "sheet") ? (results as any) : (results as any);
+      } catch {}
+      try {
+        const finalResults = (activeTab === "sheet") ? (results as any) : (results as any);
+      } catch {}
+      try {
+        const target = (activeTab === "sheet") ? calculationResults : calculationResults;
+        analytics.track("calculation_complete", {
+          unit_cost: target.costPerPiece,
+          total_cost: target.materialCost,
+          quantity: Number(data.quantity) || 0,
+          material_type: data.materialType,
+          shape: data.shape,
+        });
+      } catch {}
       const now = Date.now();
       if (now - lastToastTime > 2000) {
         toast.success("계산이 완료되었습니다!");
