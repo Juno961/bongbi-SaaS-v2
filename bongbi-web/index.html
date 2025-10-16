@@ -10,6 +10,29 @@
       window.dataLayer = window.dataLayer || [];
       window.gtag = window.gtag || function(){ dataLayer.push(arguments); };
     </script>
+
+    <!-- GA4: Ensure snippet injection in built index.html (prod + flag) with send_page_view:false -->
+    <script type="module">
+      // These values are replaced by Vite at build time
+      const ENABLED = import.meta.env.PROD && import.meta.env.VITE_ENABLE_GA4 === 'true';
+      const GA4_ID = import.meta.env.VITE_GA4_ID;
+      const DEBUG = import.meta.env.VITE_GA4_DEBUG === 'true';
+      if (ENABLED && GA4_ID) {
+        const s = document.createElement('script');
+        s.async = true;
+        s.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(GA4_ID)}`;
+        document.head.appendChild(s);
+        window.dataLayer = window.dataLayer || [];
+        window.gtag = window.gtag || function(){ window.dataLayer.push(arguments); };
+        window.gtag('js', new Date());
+        window.gtag('config', GA4_ID, {
+          anonymize_ip: true,
+          allow_google_signals: false,
+          send_page_view: false,
+        });
+        if (DEBUG) console.info('[GA4] snippet injected in index.html');
+      }
+    </script>
   </head>
 
   <body>

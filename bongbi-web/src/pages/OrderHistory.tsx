@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import analytics from "@/lib/analytics";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -412,7 +413,7 @@ const OrderHistory = () => {
                 </Button>
               </div>
             )}
-            <Button disabled={savedOrders.length === 0} className="shrink-0 whitespace-nowrap text-xs sm:text-sm px-2 sm:px-3">
+            <Button disabled={savedOrders.length === 0} className="shrink-0 whitespace-nowrap text-xs sm:text-sm px-2 sm:px-3" onClick={() => { try { analytics.track('export_downloaded', { format: 'json' }); } catch {} }}>
               <Download className="h-4 w-4 mr-2" />
               내역 내보내기
             </Button>

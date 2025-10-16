@@ -3,6 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import analytics from "@/lib/analytics";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
@@ -566,6 +567,11 @@ const Settings = () => {
     
     URL.revokeObjectURL(url);
     toast.success("설정이 내보내기 되었습니다.");
+
+    // analytics: export downloaded
+    try {
+      analytics.track("export_downloaded", { format: 'json' });
+    } catch {}
   };
 
   const importSettings = (event: React.ChangeEvent<HTMLInputElement>) => {

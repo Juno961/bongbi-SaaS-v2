@@ -13,6 +13,7 @@ declare global {
 const ENABLED = (import.meta as any).env?.VITE_ENABLE_GA4 === "true";
 const GA4_ID = (import.meta as any).env?.VITE_GA4_ID as string | undefined;
 const IS_PROD = (import.meta as any).env?.PROD === true;
+const DEBUG = (import.meta as any).env?.VITE_GA4_DEBUG === "true";
 
 // Internal state
 let isInitialized = false;
@@ -59,6 +60,7 @@ function injectScriptOnce(id: string): void {
     // send_page_view is controlled manually for SPA
     send_page_view: false,
   });
+  if (DEBUG) console.info("[GA4] runtime gtag injected");
 }
 
 export function initGA4(): void {
@@ -70,6 +72,7 @@ export function initGA4(): void {
     injectScriptOnce(GA4_ID!);
     isInitialized = true;
     window.__ga4Initialized__ = true;
+    if (DEBUG) console.info("[GA4] initGA4 executed");
 
     // Flush queued events
     if (eventQueue.length > 0) {
@@ -115,6 +118,7 @@ export function sendPageView(path: string): void {
       return;
     }
     window.gtag("event", "page_view", params);
+    if (DEBUG) console.info("[GA4] page_view", params);
   }, 150);
 }
 
@@ -152,6 +156,7 @@ export function track(event: string, params?: GAParams): void {
 
   try {
     window.gtag("event", event, params || {});
+    if (DEBUG) console.info("[GA4] event", event, params || {});
   } catch {
     // no-op
   }

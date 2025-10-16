@@ -223,6 +223,7 @@ const Calculator = () => {
 
     if (apiConnected === false) {
       toast.error("백엔드 서버에 연결되지 않았습니다.");
+      try { analytics.track("error_shown", { code: "api_connection_failed", where: "Calculator" }); } catch {}
       return;
     }
 
@@ -471,6 +472,14 @@ const Calculator = () => {
     // Save to localStorage for OrderHistory
     const updatedOrders = [newOrder, ...existingOrders];
     localStorage.setItem("savedOrders", JSON.stringify(updatedOrders));
+
+    // analytics: quote saved
+    try {
+      analytics.track("quote_saved", {
+        items: 1,
+        total_cost: newOrder.totalCost,
+      });
+    } catch {}
 
     // 저장 성공 시 해시 업데이트 및 쿨다운 설정
     setLastSavedData(currentDataHash);

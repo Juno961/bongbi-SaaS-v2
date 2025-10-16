@@ -12,13 +12,15 @@ import Help from "./pages/Help";
 import NotFound from "./pages/NotFound";
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { sendPageView } from "./lib/analytics";
+import { sendPageView, initGA4 } from "./lib/analytics";
 
 const queryClient = new QueryClient();
 
 const RouteChangeHandler = () => {
   const location = useLocation();
   useEffect(() => {
+    // Ensure GA4 is initialized once at app entry
+    try { initGA4(); } catch {}
     sendPageView(location.pathname + location.search);
   }, [location.pathname, location.search]);
   return null;
