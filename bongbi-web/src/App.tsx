@@ -18,10 +18,24 @@ const queryClient = new QueryClient();
 
 const RouteChangeHandler = () => {
   const location = useLocation();
+  const DEBUG = (import.meta as any).env?.VITE_GA4_DEBUG === 'true';
+
+  // 1) 앱 최초 진입 시 1회 page_view 보장
   useEffect(() => {
-    // Ensure GA4 is initialized once at app entry
     try { initGA4(); } catch {}
-    sendPageView(location.pathname + location.search);
+    try {
+      if (DEBUG) console.info('[GA4] page_view', window.location.pathname);
+      sendPageView(window.location.pathname);
+    } catch {}
+  }, []);
+
+  // 2) 경로 변경마다 page_view 전송
+  useEffect(() => {
+    try { initGA4(); } catch {}
+    try {
+      if (DEBUG) console.info('[GA4] page_view', location.pathname);
+      sendPageView(location.pathname + location.search);
+    } catch {}
   }, [location.pathname, location.search]);
   return null;
 };
