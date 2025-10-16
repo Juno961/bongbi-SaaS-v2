@@ -116,8 +116,14 @@ export const MaterialFormWizard = ({
     const year = now.getFullYear().toString().slice(-2); // 연도 뒷 2자리만 사용
     const month = (now.getMonth() + 1).toString().padStart(2, "0");
     const day = now.getDate().toString().padStart(2, "0");
+    
+    // Get next counter based on today's orders only
+    const datePrefix = `${year}${month}${day}`;
     const savedOrders = JSON.parse(localStorage.getItem("savedOrders") || "[]");
-    const counter = (savedOrders.length + 1).toString().padStart(3, "0");
+    const todayOrders = savedOrders.filter((order: any) => 
+      order.productName?.startsWith(datePrefix)
+    );
+    const counter = (todayOrders.length + 1).toString().padStart(3, "0");
     return `${year}${month}${day}-${counter}`;
   };
 
